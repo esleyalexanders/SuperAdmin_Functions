@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Tenant - Franchise Management</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 250px;
+            background: white;
+            box-shadow: 2px 0 4px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            z-index: 1000;
+        }
+
+        .logo {
+            padding: 20px;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-icon {
+            width: 30px;
+            height: 30px;
+            background: #dc3545;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .logo-text {
+            font-size: 18px;
+            font-weight: 600;
+            color: #007bff;
+        }
+
+        .nav-menu {
+            flex: 1;
+            padding: 20px 0;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 20px;
+            color: #6c757d;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+        }
+
+        .nav-item:hover {
+            background: #f8f9fa;
+            color: #007bff;
+        }
+
+        .nav-item.active {
+            background: #e7f3ff;
+            color: #007bff;
+            border-left-color: #007bff;
+        }
+
+        .nav-icon {
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .user-profile {
+            padding: 20px;
+            border-top: 1px solid #e9ecef;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background: #dc3545;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+
+        .user-info {
+            flex: 1;
+        }
+
+        .user-name {
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 14px;
+        }
+
+        .user-role {
+            font-size: 12px;
+            color: #6c757d;
+        }
+
+        .main-content {
+            flex: 1;
+            margin-left: 250px;
+            padding: 30px;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .page-title {
+            font-size: 28px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: #007bff;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #0056b3;
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #6c757d;
+            border: 1px solid #dee2e6;
+        }
+
+        .btn-secondary:hover {
+            background: #f8f9fa;
+            border-color: #adb5bd;
+        }
+
+        .btn-warning {
+            background: #ffc107;
+            color: #212529;
+        }
+
+        .btn-warning:hover {
+            background: #e0a800;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+        }
+
+        .form-container {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            max-width: 900px;
+        }
+
+        .form-section {
+            margin-bottom: 30px;
+            padding-bottom: 30px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .form-section:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-icon {
+            font-size: 24px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-row.single {
+            grid-template-columns: 1fr;
+        }
+
+        .form-group {
+            margin-bottom: 0;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #2c3e50;
+            font-size: 14px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 0 3px rgba(0,123,255,0.1);
+        }
+
+        .form-select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            font-size: 14px;
+            background: white;
+            cursor: pointer;
+        }
+
+        .form-textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            font-size: 14px;
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            margin-top: 30px;
+        }
+
+        .alert {
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .alert-warning {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            color: #856404;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .status-active {
+            background: #e8f5e8;
+            color: #2e7d32;
+        }
+
+        .status-inactive {
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        .status-suspended {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 200px;
+            }
+
+            .main-content {
+                margin-left: 200px;
+                padding: 20px;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .page-header {
+                flex-direction: column;
+                gap: 15px;
+                align-items: stretch;
+            }
+
+            .form-actions,
+            .action-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="logo">
+            <div class="logo-icon">◆</div>
+            <div class="logo-text">franchise-web</div>
+        </div>
+        
+        <nav class="nav-menu">
+            <a href="super_admin_home.html" class="nav-item">
+                <div class="nav-icon">🏠</div>
+                <span>Home</span>
+            </a>
+            <a href="super_admin_accounts.html" class="nav-item">
+                <div class="nav-icon">👥</div>
+                <span>Super Admin Accounts</span>
+            </a>
+            <a href="../index.html" class="nav-item active">
+                <div class="nav-icon">🏢</div>
+                <span>Tenant Management</span>
+            </a>
+            <a href="tenant_search.html" class="nav-item">
+                <div class="nav-icon">🔍</div>
+                <span>Search & Reports</span>
+            </a>
+        </nav>
+        
+        <div class="user-profile">
+            <div class="user-avatar">SA</div>
+            <div class="user-info">
+                <div class="user-name">Super Admin</div>
+                <div class="user-role">System Administrator</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="page-header">
+            <h1 class="page-title">Edit Tenant Account</h1>
+            <div class="header-actions">
+                <button class="btn btn-secondary" onclick="window.location.href='../index.html'">
+                    <span>←</span> Back to List
+                </button>
+            </div>
+        </div>
+
+        <div class="alert alert-warning">
+            <span>⚠️</span>
+            <div>
+                <strong>Important:</strong> Any changes made to this tenant account will trigger an email notification to the tenant's primary contact. Changes to subscription plans will be reflected in the next billing cycle.
+            </div>
+        </div>
+
+        <form id="editTenantForm" class="form-container" onsubmit="return handleSubmit(event)">
+            <!-- Current Status Section -->
+            <div class="form-section">
+                <div class="section-title">
+                    <span class="section-icon">📊</span>
+                    Current Status
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Account Status</label>
+                        <div>
+                            <span class="status-badge status-active" id="currentStatus">Active</span>
+                        </div>
+                        <p style="font-size: 12px; color: #6c757d; margin-top: 5px;">
+                            Last updated: <span id="lastUpdated">October 1, 2025</span>
+                        </p>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Account Created</label>
+                        <div style="padding: 12px 0;">
+                            <span style="font-weight: 600;" id="createdDate">September 15, 2025</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Business Information Section -->
+            <div class="form-section">
+                <div class="section-title">
+                    <span class="section-icon">🏢</span>
+                    Business Information
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Brand Name</label>
+                        <input type="text" class="form-input" id="brandName" value="McDonald's Franchise" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Subdomain</label>
+                        <input type="text" class="form-input" id="subdomain" value="mcdonalds" required>
+                        <p style="font-size: 12px; color: #6c757d; margin-top: 5px;">
+                            mcdonalds.franchise.com
+                        </p>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Industry Category</label>
+                        <select class="form-select" id="industry">
+                            <option value="Food & Beverage" selected>Food & Beverage</option>
+                            <option value="Retail">Retail</option>
+                            <option value="Fitness & Wellness">Fitness & Wellness</option>
+                            <option value="Education">Education</option>
+                            <option value="Automotive">Automotive</option>
+                            <option value="Beauty & Salon">Beauty & Salon</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Country</label>
+                        <select class="form-select" id="country">
+                            <option value="USA" selected>United States</option>
+                            <option value="Canada">Canada</option>
+                            <option value="UK">United Kingdom</option>
+                            <option value="Australia">Australia</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contact Information Section -->
+            <div class="form-section">
+                <div class="section-title">
+                    <span class="section-icon">👤</span>
+                    Primary Contact Information
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Contact Name</label>
+                        <input type="text" class="form-input" id="contactName" value="John Smith" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Contact Title</label>
+                        <input type="text" class="form-input" id="contactTitle" value="CEO" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Email Address</label>
+                        <input type="email" class="form-input" id="contactEmail" value="john@mcdonalds.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Phone Number</label>
+                        <input type="tel" class="form-input" id="contactPhone" value="+1 (555) 123-4567" required>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Subscription & Limits Section -->
+            <div class="form-section">
+                <div class="section-title">
+                    <span class="section-icon">💳</span>
+                    Subscription & Account Limits
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Subscription Plan</label>
+                        <select class="form-select" id="planType">
+                            <option value="Starter">Starter Plan - $99/month</option>
+                            <option value="Professional" selected>Professional Plan - $299/month</option>
+                            <option value="Enterprise">Enterprise Plan - $599/month</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Billing Cycle</label>
+                        <select class="form-select" id="billingCycle">
+                            <option value="Monthly" selected>Monthly</option>
+                            <option value="Annual">Annual (20% discount)</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Max Franchisee Accounts</label>
+                        <input type="number" class="form-input" id="maxFranchisees" value="12" min="1">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Max Staff Accounts</label>
+                        <input type="number" class="form-input" id="maxStaff" value="45" min="1">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Notes Section -->
+            <div class="form-section">
+                <div class="section-title">
+                    <span class="section-icon">📝</span>
+                    Internal Notes
+                </div>
+                <div class="form-row single">
+                    <div class="form-group">
+                        <label class="form-label">Notes</label>
+                        <textarea class="form-textarea" id="notes" placeholder="Internal notes about this tenant...">Large franchise network with excellent payment history.</textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions Section -->
+            <div class="form-section">
+                <div class="section-title">
+                    <span class="section-icon">⚡</span>
+                    Quick Actions
+                </div>
+                <div class="action-buttons">
+                    <button type="button" class="btn btn-warning" onclick="suspendTenant()">
+                        <span>⏸️</span> Suspend Account
+                    </button>
+                    <button type="button" class="btn btn-danger" onclick="closeTenant()">
+                        <span>🚫</span> Close Account
+                    </button>
+                </div>
+                <p style="font-size: 12px; color: #6c757d; margin-top: 10px;">
+                    These actions will send email notifications to the tenant and update their account status immediately.
+                </p>
+            </div>
+
+            <div class="form-actions">
+                <button type="button" class="btn btn-secondary" onclick="window.location.href='../index.html'">
+                    Cancel
+                </button>
+                <button type="submit" class="btn btn-primary">
+                    <span>💾</span> Save Changes
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        function handleSubmit(event) {
+            event.preventDefault();
+            
+            const formData = {
+                brandName: document.getElementById('brandName').value,
+                subdomain: document.getElementById('subdomain').value,
+                industry: document.getElementById('industry').value,
+                country: document.getElementById('country').value,
+                contactName: document.getElementById('contactName').value,
+                contactTitle: document.getElementById('contactTitle').value,
+                contactEmail: document.getElementById('contactEmail').value,
+                contactPhone: document.getElementById('contactPhone').value,
+                planType: document.getElementById('planType').value,
+                billingCycle: document.getElementById('billingCycle').value,
+                maxFranchisees: document.getElementById('maxFranchisees').value,
+                maxStaff: document.getElementById('maxStaff').value,
+                notes: document.getElementById('notes').value,
+                lastUpdated: new Date().toISOString()
+            };
+
+            alert(`Tenant account updated successfully!\n\nEmail notification sent to: ${formData.contactEmail}\n\nChanges will take effect immediately.`);
+            
+            // In real app, this would save to database
+            window.location.href = '../index.html';
+            
+            return false;
+        }
+
+        function suspendTenant() {
+            if (confirm('Are you sure you want to suspend this tenant account?\n\nThis will:\n- Block all user access\n- Pause all services\n- Send suspension notification email\n\nYou can reactivate the account later.')) {
+                window.location.href = 'tenant_suspend.html';
+            }
+        }
+
+        function closeTenant() {
+            if (confirm('Are you sure you want to CLOSE this tenant account?\n\nThis action is SEVERE and will:\n- Permanently disable the account\n- Cancel all subscriptions\n- Archive all data\n- Send closure notification email\n\nConsider suspending instead if temporary.')) {
+                window.location.href = 'tenant_close.html';
+            }
+        }
+
+        // Mobile sidebar toggle
+        if (window.innerWidth <= 576) {
+            const sidebar = document.querySelector('.sidebar');
+            const toggleBtn = document.createElement('button');
+            toggleBtn.innerHTML = '☰';
+            toggleBtn.style.cssText = 'position: fixed; top: 20px; left: 20px; z-index: 1001; background: #007bff; color: white; border: none; padding: 10px; border-radius: 4px;';
+            document.body.appendChild(toggleBtn);
+            
+            toggleBtn.addEventListener('click', () => {
+                sidebar.classList.toggle('open');
+            });
+        }
+
+        console.log('Edit Tenant page loaded');
+    </script>
+</body>
+</html>

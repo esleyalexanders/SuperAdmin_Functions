@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Super Admin Home - Franchise Management</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 250px;
+            background: white;
+            box-shadow: 2px 0 4px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            z-index: 1000;
+        }
+
+        .logo {
+            padding: 20px;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-icon {
+            width: 30px;
+            height: 30px;
+            background: #dc3545;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .logo-text {
+            font-size: 18px;
+            font-weight: 600;
+            color: #007bff;
+        }
+
+        .nav-menu {
+            flex: 1;
+            padding: 20px 0;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 20px;
+            color: #6c757d;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+        }
+
+        .nav-item:hover {
+            background: #f8f9fa;
+            color: #007bff;
+        }
+
+        .nav-item.active {
+            background: #e7f3ff;
+            color: #007bff;
+            border-left-color: #007bff;
+        }
+
+        .nav-icon {
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .user-profile {
+            padding: 20px;
+            border-top: 1px solid #e9ecef;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background: #dc3545;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+
+        .user-info {
+            flex: 1;
+        }
+
+        .user-name {
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 14px;
+        }
+
+        .user-role {
+            font-size: 12px;
+            color: #6c757d;
+        }
+
+        .main-content {
+            flex: 1;
+            margin-left: 250px;
+            padding: 30px;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .page-title {
+            font-size: 28px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: #007bff;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #0056b3;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+        }
+
+        .welcome-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 40px;
+            border-radius: 12px;
+            color: white;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .welcome-title {
+            font-size: 32px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .welcome-subtitle {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        .function-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            margin-bottom: 30px;
+        }
+
+        .function-card {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+
+        .function-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+        }
+
+        .card-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            margin-bottom: 20px;
+        }
+
+        .card-icon.red {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+        }
+
+        .card-icon.blue {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+
+        .card-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .card-description {
+            font-size: 14px;
+            color: #6c757d;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .card-action-btn {
+            padding: 8px 16px;
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            font-size: 12px;
+            color: #495057;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .card-action-btn:hover {
+            background: #e9ecef;
+            border-color: #adb5bd;
+        }
+
+        .stats-section {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+
+        .stats-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 32px;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: #6c757d;
+        }
+
+        .recent-activity {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .activity-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+
+        .activity-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            border-bottom: 1px solid #f1f3f4;
+        }
+
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+
+        .activity-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .activity-icon.success {
+            background: #e8f5e8;
+            color: #2e7d32;
+        }
+
+        .activity-icon.warning {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+
+        .activity-icon.info {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .activity-content {
+            flex: 1;
+        }
+
+        .activity-text {
+            font-size: 14px;
+            color: #2c3e50;
+            margin-bottom: 3px;
+        }
+
+        .activity-time {
+            font-size: 12px;
+            color: #6c757d;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 200px;
+            }
+
+            .main-content {
+                margin-left: 200px;
+                padding: 20px;
+            }
+
+            .function-cards {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 576px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .page-header {
+                flex-direction: column;
+                gap: 15px;
+                align-items: stretch;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="logo">
+            <div class="logo-icon">◆</div>
+            <div class="logo-text">Super Admin Site</div>
+        </div>
+        
+        <nav class="nav-menu">
+            <a href="super_admin_home.html" class="nav-item active">
+                <div class="nav-icon">🏠</div>
+                <span>Home</span>
+            </a>
+            <a href="super_admin_accounts.html" class="nav-item">
+                <div class="nav-icon">👥</div>
+                <span>Super Admin Accounts</span>
+            </a>
+            <a href="Index.html" class="nav-item">
+                <div class="nav-icon">🏢</div>
+                <span>Tenant Management</span>
+            </a>
+        </nav>
+        
+        <div class="user-profile">
+            <div class="user-avatar">SA</div>
+            <div class="user-info">
+                <div class="user-name">Super Admin</div>
+                <div class="user-role">System Administrator</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="page-header">
+            <h1 class="page-title">Super Admin Dashboard</h1>
+            <div class="header-actions">
+                <button class="btn btn-outline" onclick="location.reload()">
+                    <span>🔄</span> Refresh
+                </button>
+                <button class="btn btn-danger" onclick="logout()">
+                    <span>🚪</span> Logout
+                </button>
+            </div>
+        </div>
+
+        <div class="welcome-section">
+            <div class="welcome-title">Welcome Back, Super Admin!</div>
+            <div class="welcome-subtitle">Manage your franchise system with complete control</div>
+        </div>
+
+        <div class="function-cards">
+            <div class="function-card" onclick="window.location.href='super_admin_accounts.html?action=create'">
+                <div class="card-icon red">
+                    👥
+                </div>
+                <div class="card-title">Super Admin Management</div>
+                <div class="card-description">
+                    Create, Read, Update super admin accounts. Delete requires development team assistance.
+                </div>
+            </div>
+
+            <a href="Index.html" class="function-card">
+                <div class="card-icon blue">
+                    🏢
+                </div>
+                <div class="card-title">Tenant Management & Reports</div>
+                <div class="card-description">
+                    Create, edit, suspend, close tenant accounts. Search and generate reports. Manage franchisors and single store owners.
+                </div>
+            </a>
+        </div>
+
+        <div class="stats-section">
+            <div class="stats-title">System Overview</div>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number">24</div>
+                    <div class="stat-label">Total Tenants</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">18</div>
+                    <div class="stat-label">Active Tenants</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">2</div>
+                    <div class="stat-label">Inactive Tenants</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="recent-activity">
+            <div class="activity-title">Recent Activity</div>
+            <div class="activity-item">
+                <div class="activity-icon success">✓</div>
+                <div class="activity-content">
+                    <div class="activity-text">New tenant "Coffee Hub" created and activated</div>
+                    <div class="activity-time">2 hours ago</div>
+                </div>
+            </div>
+            <div class="activity-item">
+                <div class="activity-icon warning">⚠</div>
+                <div class="activity-content">
+                    <div class="activity-text">Tenant "Burger Palace" payment failed - status set to Inactive</div>
+                    <div class="activity-time">5 hours ago</div>
+                </div>
+            </div>
+            <div class="activity-item">
+                <div class="activity-icon info">ℹ</div>
+                <div class="activity-content">
+                    <div class="activity-text">Super admin "John Smith" updated tenant "Pizza Express"</div>
+                    <div class="activity-time">1 day ago</div>
+                </div>
+            </div>
+            <div class="activity-item">
+                <div class="activity-icon success">✓</div>
+                <div class="activity-content">
+                    <div class="activity-text">Payment successful for "Fitness Center" - Enterprise plan activated</div>
+                    <div class="activity-time">2 days ago</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                sessionStorage.clear();
+                localStorage.clear();
+                alert('Logged out successfully!');
+                window.location.href = '../[SA] Function Design/[SU] New Tenant creation/auth_signin.html';
+            }
+        }
+
+        // Mobile sidebar toggle
+        if (window.innerWidth <= 576) {
+            const sidebar = document.querySelector('.sidebar');
+            const toggleBtn = document.createElement('button');
+            toggleBtn.innerHTML = '☰';
+            toggleBtn.style.cssText = 'position: fixed; top: 20px; left: 20px; z-index: 1001; background: #007bff; color: white; border: none; padding: 10px; border-radius: 4px;';
+            document.body.appendChild(toggleBtn);
+            
+            toggleBtn.addEventListener('click', () => {
+                sidebar.classList.toggle('open');
+            });
+        }
+
+        // Initialize on load
+        console.log('Super Admin Home loaded');
+        
+        // Check if user is logged in (in real app)
+        const userSession = sessionStorage.getItem('superAdminSession');
+        if (!userSession) {
+            console.log('No session found - would redirect to login');
+        }
+    </script>
+</body>
+</html>

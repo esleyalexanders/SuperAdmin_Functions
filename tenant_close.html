@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Close Tenant Account - Franchise Management</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%);
+            color: #333;
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 700px;
+            width: 100%;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            padding: 50px;
+            animation: slideUp 0.5s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .danger-icon {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 30px;
+            background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 50px;
+            animation: pulse 2s ease infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        .page-title {
+            font-size: 32px;
+            font-weight: 700;
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .page-subtitle {
+            font-size: 18px;
+            color: #6c757d;
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .tenant-info {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .info-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .info-item:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            color: #6c757d;
+            font-size: 14px;
+        }
+
+        .info-value {
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 14px;
+        }
+
+        .danger-box {
+            background: #ffebee;
+            border: 2px solid #dc3545;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .danger-title {
+            font-weight: 700;
+            color: #c62828;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 18px;
+        }
+
+        .danger-text {
+            font-size: 14px;
+            color: #c62828;
+            line-height: 1.8;
+        }
+
+        .danger-text ul {
+            margin-left: 20px;
+            margin-top: 10px;
+        }
+
+        .danger-text li {
+            margin-bottom: 5px;
+        }
+
+        .alternative-box {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .alternative-title {
+            font-weight: 600;
+            color: #856404;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .alternative-text {
+            font-size: 14px;
+            color: #856404;
+            line-height: 1.8;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #2c3e50;
+            font-size: 14px;
+        }
+
+        .form-textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            font-size: 14px;
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .form-textarea:focus {
+            outline: none;
+            border-color: #dc3545;
+            box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #dc3545;
+            box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1);
+        }
+
+        .form-checkbox {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .form-checkbox input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            margin-top: 2px;
+        }
+
+        .form-checkbox label {
+            font-size: 14px;
+            color: #2c3e50;
+            cursor: pointer;
+            flex: 1;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(235, 51, 73, 0.4);
+        }
+
+        .btn-danger:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #6c757d;
+            border: 2px solid #dee2e6;
+        }
+
+        .btn-secondary:hover {
+            background: #f8f9fa;
+            border-color: #adb5bd;
+        }
+
+        @media (max-width: 576px) {
+            .container {
+                padding: 30px 20px;
+            }
+
+            .page-title {
+                font-size: 24px;
+            }
+
+            .page-subtitle {
+                font-size: 16px;
+            }
+
+            .btn-group {
+                flex-direction: column-reverse;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="danger-icon">🚫</div>
+        
+        <h1 class="page-title">Close Tenant Account</h1>
+        <p class="page-subtitle">Permanently disable this account</p>
+
+        <div class="tenant-info">
+            <div class="info-title">Tenant Information</div>
+            <div class="info-item">
+                <div class="info-label">Brand Name</div>
+                <div class="info-value">McDonald's Franchise</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Contact</div>
+                <div class="info-value">john@mcdonalds.com</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Current Status</div>
+                <div class="info-value" style="color: #28a745;">Active</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Franchisees</div>
+                <div class="info-value">12</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Staff</div>
+                <div class="info-value">45</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Account Age</div>
+                <div class="info-value">17 days</div>
+            </div>
+        </div>
+
+        <div class="danger-box">
+            <div class="danger-title">
+                <span>⚠️</span> SEVERE ACTION WARNING
+            </div>
+            <div class="danger-text">
+                <strong>Closing this account is a PERMANENT action that cannot be easily reversed.</strong>
+                <br><br>
+                This will:
+                <ul>
+                    <li>Permanently disable all user access (franchisees, staff, clients)</li>
+                    <li>Cancel all active subscriptions immediately</li>
+                    <li>Archive all account data (can be retrieved but requires dev team)</li>
+                    <li>Send closure notifications to all 57 users</li>
+                    <li>Stop all billing permanently</li>
+                    <li>Mark the account as "Closed" in the system</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="alternative-box">
+            <div class="alternative-title">
+                <span>💡</span> Consider Suspending Instead?
+            </div>
+            <div class="alternative-text">
+                If this is a temporary issue (non-payment, policy violation, etc.), consider <strong>suspending the account</strong> instead. Suspension is reversible and preserves active data while blocking access.
+                <br><br>
+                <a href="tenant_suspend.html" style="color: #007bff; text-decoration: none; font-weight: 600;">→ Go to Suspension Page</a>
+            </div>
+        </div>
+
+        <form id="closeForm" onsubmit="return handleClose(event)">
+            <div class="form-group">
+                <label class="form-label">Closure Reason (required)</label>
+                <textarea class="form-textarea" id="closureReason" required placeholder="e.g., Business closure, Contract termination, Data breach, Legal requirement, etc."></textarea>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Type "CLOSE ACCOUNT" to confirm (required)</label>
+                <input type="text" class="form-input" id="confirmText" required placeholder="Type exactly: CLOSE ACCOUNT">
+            </div>
+
+            <div class="form-checkbox">
+                <input type="checkbox" id="confirmUnderstand" required>
+                <label for="confirmUnderstand">
+                    <strong>I understand this is a permanent action</strong> and that closing this account will affect 12 franchisees and 45 staff members. I have reviewed alternatives and this is the correct decision.
+                </label>
+            </div>
+
+            <div class="form-checkbox">
+                <input type="checkbox" id="confirmNotification" required>
+                <label for="confirmNotification">
+                    I confirm that closure notification emails will be sent to all users
+                </label>
+            </div>
+
+            <div class="btn-group">
+                <button type="button" class="btn btn-secondary" onclick="window.location.href='tenant_edit.html'">
+                    <span>←</span> Cancel & Go Back
+                </button>
+                <button type="submit" class="btn btn-danger" id="closeBtn" disabled>
+                    <span>🚫</span> Close Account Permanently
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // Enable close button only when all checkboxes are checked and text is entered
+        function checkForm() {
+            const checkbox1 = document.getElementById('confirmUnderstand').checked;
+            const checkbox2 = document.getElementById('confirmNotification').checked;
+            const confirmText = document.getElementById('confirmText').value;
+            
+            const isValid = checkbox1 && checkbox2 && confirmText === 'CLOSE ACCOUNT';
+            document.getElementById('closeBtn').disabled = !isValid;
+        }
+
+        document.getElementById('confirmUnderstand').addEventListener('change', checkForm);
+        document.getElementById('confirmNotification').addEventListener('change', checkForm);
+        document.getElementById('confirmText').addEventListener('input', checkForm);
+
+        function handleClose(event) {
+            event.preventDefault();
+            
+            const reason = document.getElementById('closureReason').value;
+            
+            // Final warning
+            if (confirm('FINAL WARNING\n\nThis is your last chance to cancel.\n\nAre you ABSOLUTELY CERTAIN you want to permanently close this account?\n\nClick OK to proceed with permanent closure.\nClick Cancel to return to safety.')) {
+                // Simulate closure process
+                document.querySelector('.container').innerHTML = `
+                    <div style="text-align: center; padding: 50px 0;">
+                        <div style="width: 80px; height: 80px; border: 4px solid #f3f3f3; border-top: 4px solid #dc3545; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 30px;"></div>
+                        <h2 style="font-size: 24px; margin-bottom: 10px;">Closing Account...</h2>
+                        <p style="color: #6c757d;">Canceling subscriptions, archiving data, and sending notifications</p>
+                    </div>
+                `;
+
+                setTimeout(() => {
+                    // Store closure info
+                    const closureInfo = {
+                        status: 'Closed',
+                        reason: reason,
+                        closedDate: new Date().toISOString(),
+                        closedBy: 'Super Admin'
+                    };
+                    sessionStorage.setItem('tenantStatus', JSON.stringify(closureInfo));
+
+                    alert('Account Closed Successfully\n\n✓ Account status: Closed\n✓ All subscriptions canceled\n✓ All user access terminated\n✓ Email notifications sent to:\n  - john@mcdonalds.com (Primary Contact)\n  - 12 franchisee accounts\n  - 45 staff accounts\n✓ Data archived\n\nThe account is now permanently closed. Data can be retrieved by contacting the development team if needed.');
+                    
+                    window.location.href = '../index.html';
+                }, 2500);
+            }
+
+            return false;
+        }
+
+        console.log('Close Tenant page loaded');
+    </script>
+
+    <style>
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</body>
+</html>

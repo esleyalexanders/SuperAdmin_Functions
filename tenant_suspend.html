@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Suspend Tenant Account - Franchise Management</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: #333;
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 700px;
+            width: 100%;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            padding: 50px;
+            animation: slideUp 0.5s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .warning-icon {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 30px;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 50px;
+            animation: pulse 2s ease infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        .page-title {
+            font-size: 32px;
+            font-weight: 700;
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .page-subtitle {
+            font-size: 18px;
+            color: #6c757d;
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .tenant-info {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .info-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .info-item:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            color: #6c757d;
+            font-size: 14px;
+        }
+
+        .info-value {
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 14px;
+        }
+
+        .warning-box {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .warning-title {
+            font-weight: 600;
+            color: #856404;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .warning-text {
+            font-size: 14px;
+            color: #856404;
+            line-height: 1.8;
+        }
+
+        .warning-text ul {
+            margin-left: 20px;
+            margin-top: 10px;
+        }
+
+        .warning-text li {
+            margin-bottom: 5px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #2c3e50;
+            font-size: 14px;
+        }
+
+        .form-textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            font-size: 14px;
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .form-textarea:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 0 3px rgba(0,123,255,0.1);
+        }
+
+        .form-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .form-checkbox input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .form-checkbox label {
+            font-size: 14px;
+            color: #2c3e50;
+            cursor: pointer;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+
+        .btn-warning:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(240, 147, 251, 0.4);
+        }
+
+        .btn-warning:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #6c757d;
+            border: 2px solid #dee2e6;
+        }
+
+        .btn-secondary:hover {
+            background: #f8f9fa;
+            border-color: #adb5bd;
+        }
+
+        @media (max-width: 576px) {
+            .container {
+                padding: 30px 20px;
+            }
+
+            .page-title {
+                font-size: 24px;
+            }
+
+            .page-subtitle {
+                font-size: 16px;
+            }
+
+            .btn-group {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="warning-icon">⏸️</div>
+        
+        <h1 class="page-title">Suspend Tenant Account</h1>
+        <p class="page-subtitle">Temporarily disable account access</p>
+
+        <div class="tenant-info">
+            <div class="info-title">Tenant Information</div>
+            <div class="info-item">
+                <div class="info-label">Brand Name</div>
+                <div class="info-value">McDonald's Franchise</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Contact</div>
+                <div class="info-value">john@mcdonalds.com</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Current Status</div>
+                <div class="info-value" style="color: #28a745;">Active</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Franchisees</div>
+                <div class="info-value">12</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Staff</div>
+                <div class="info-value">45</div>
+            </div>
+        </div>
+
+        <div class="warning-box">
+            <div class="warning-title">
+                <span>⚠️</span> Suspension Effects
+            </div>
+            <div class="warning-text">
+                Suspending this account will:
+                <ul>
+                    <li>Block all user login access (franchisees, staff, clients)</li>
+                    <li>Pause all active services and features</li>
+                    <li>Stop billing for the suspension period</li>
+                    <li>Preserve all data for future reactivation</li>
+                    <li>Send email notifications to all affected users</li>
+                </ul>
+                <br>
+                <strong>Note:</strong> You can reactivate this account at any time from the tenant management page.
+            </div>
+        </div>
+
+        <form id="suspendForm" onsubmit="return handleSuspend(event)">
+            <div class="form-group">
+                <label class="form-label">Suspension Reason (required)</label>
+                <textarea class="form-textarea" id="suspensionReason" required placeholder="e.g., Non-payment of dues, Policy violation, Customer request, etc."></textarea>
+            </div>
+
+            <div class="form-checkbox">
+                <input type="checkbox" id="confirmSuspension" required>
+                <label for="confirmSuspension">
+                    I confirm that I want to suspend this tenant account and send email notifications to all users
+                </label>
+            </div>
+
+            <div class="btn-group">
+                <button type="button" class="btn btn-secondary" onclick="window.location.href='tenant_edit.html'">
+                    <span>←</span> Cancel
+                </button>
+                <button type="submit" class="btn btn-warning" id="suspendBtn" disabled>
+                    <span>⏸️</span> Suspend Account
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // Enable suspend button only when checkbox is checked
+        document.getElementById('confirmSuspension').addEventListener('change', function() {
+            document.getElementById('suspendBtn').disabled = !this.checked;
+        });
+
+        function handleSuspend(event) {
+            event.preventDefault();
+            
+            const reason = document.getElementById('suspensionReason').value;
+            
+            // Show confirmation
+            if (confirm('Final Confirmation\n\nAre you absolutely sure you want to suspend this account?\n\nThis will affect 12 franchisees and 45 staff members.')) {
+                // Simulate suspension process
+                document.querySelector('.container').innerHTML = `
+                    <div style="text-align: center; padding: 50px 0;">
+                        <div style="width: 80px; height: 80px; border: 4px solid #f3f3f3; border-top: 4px solid #ffc107; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 30px;"></div>
+                        <h2 style="font-size: 24px; margin-bottom: 10px;">Suspending Account...</h2>
+                        <p style="color: #6c757d;">Updating status and sending notifications</p>
+                    </div>
+                `;
+
+                setTimeout(() => {
+                    // Store suspension info
+                    const suspensionInfo = {
+                        status: 'Suspended',
+                        reason: reason,
+                        suspendedDate: new Date().toISOString(),
+                        suspendedBy: 'Super Admin'
+                    };
+                    sessionStorage.setItem('tenantStatus', JSON.stringify(suspensionInfo));
+
+                    alert('Account Suspended Successfully!\n\n✓ Account status updated to: Suspended\n✓ All user access blocked\n✓ Email notifications sent to:\n  - john@mcdonalds.com (Primary Contact)\n  - 12 franchisee accounts\n  - 45 staff accounts\n✓ Billing paused\n\nYou can reactivate this account from the tenant management page.');
+                    
+                    window.location.href = '../index.html';
+                }, 2000);
+            }
+
+            return false;
+        }
+
+        console.log('Suspend Tenant page loaded');
+    </script>
+
+    <style>
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</body>
+</html>

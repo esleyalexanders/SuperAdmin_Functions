@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Super Admin Accounts - Management</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 250px;
+            background: white;
+            box-shadow: 2px 0 4px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            z-index: 1000;
+        }
+        .logo {
+            padding: 20px;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-icon {
+            width: 30px;
+            height: 30px;
+            background: #dc3545;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .logo-text {
+            font-size: 18px;
+            font-weight: 600;
+            color: #007bff;
+        }
+
+        .nav-menu {
+            flex: 1;
+            padding: 20px 0;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 20px;
+            color: #6c757d;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+        }
+
+        .nav-item:hover {
+            background: #f8f9fa;
+            color: #007bff;
+        }
+
+        .nav-item.active {
+            background: #e7f3ff;
+            color: #007bff;
+            border-left-color: #007bff;
+        }
+
+        .nav-icon {
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .user-profile {
+            padding: 20px;
+            border-top: 1px solid #e9ecef;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background: #dc3545;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+
+        .user-info {
+            flex: 1;
+        }
+
+        .user-name {
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 14px;
+        }
+
+        .user-role {
+            font-size: 12px;
+            color: #6c757d;
+        }
+
+        .main-content {
+            flex: 1;
+            margin-left: 250px;
+            padding: 30px;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .page-title {
+            font-size: 28px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: #007bff;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #0056b3;
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #6c757d;
+            border: 1px solid #dee2e6;
+        }
+
+        .btn-secondary:hover {
+            background: #f8f9fa;
+            border-color: #adb5bd;
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+        }
+
+        .search-filter-section {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 0 3px rgba(0,123,255,0.1);
+        }
+
+        .data-table-container {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .table th {
+            background: #f8f9fa;
+            padding: 16px 12px;
+            text-align: left;
+            font-weight: 600;
+            color: #495057;
+            border-bottom: 1px solid #dee2e6;
+            font-size: 14px;
+        }
+
+        .table td {
+            padding: 16px 12px;
+            border-bottom: 1px solid #f1f3f4;
+            font-size: 14px;
+        }
+
+        .table tbody tr:hover {
+            background: #f8f9fa;
+        }
+
+        .admin-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .admin-avatar {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .admin-details {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .admin-name {
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 14px;
+        }
+
+        .admin-email {
+            font-size: 12px;
+            color: #6c757d;
+        }
+
+        .contact-info {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .contact-line {
+            color: #495057;
+            font-size: 13px;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .status-active {
+            background: #e8f5e8;
+            color: #2e7d32;
+        }
+
+        .status-inactive {
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-edit {
+            background: white;
+            color: #6c757d;
+            border: 1px solid #dee2e6;
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+
+        .btn-edit:hover {
+            background: #f8f9fa;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: #6c757d;
+            cursor: pointer;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+        }
+
+        .modal-close:hover {
+            color: #dc3545;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #2c3e50;
+            font-size: 14px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 0 3px rgba(0,123,255,0.1);
+        }
+
+        .form-select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            font-size: 14px;
+            background: white;
+            cursor: pointer;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            margin-top: 30px;
+        }
+
+        .alert {
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .alert-warning {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            color: #856404;
+        }
+
+        .alert-danger {
+            background: #f8d7da;
+            border: 1px solid #dc3545;
+            color: #721c24;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 200px;
+            }
+
+            .main-content {
+                margin-left: 200px;
+                padding: 20px;
+            }
+
+            .search-filter-section {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .table {
+                font-size: 12px;
+            }
+
+            .table th,
+            .table td {
+                padding: 12px 8px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .page-header {
+                flex-direction: column;
+                gap: 15px;
+                align-items: stretch;
+            }
+
+            .header-actions {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="logo">
+            <div class="logo-icon">◆</div>
+            <div class="logo-text">Super Admin Site</div>
+        </div>
+        
+        <nav class="nav-menu">
+            <a href="super_admin_home.html" class="nav-item">
+                <div class="nav-icon">🏠</div>
+                <span>Home</span>
+            </a>
+            <a href="super_admin_accounts.html" class="nav-item active">
+                <div class="nav-icon">👥</div>
+                <span>Super Admin Accounts</span>
+            </a>
+            <a href="Index.html" class="nav-item">
+                <div class="nav-icon">🏢</div>
+                <span>Tenant Management</span>
+            </a>
+        </nav>
+        
+        <div class="user-profile">
+            <div class="user-avatar">SA</div>
+            <div class="user-info">
+                <div class="user-name">Super Admin</div>
+                <div class="user-role">System Administrator</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="page-header">
+            <h1 class="page-title">Super Admin Accounts</h1>
+            <div class="header-actions">
+                <button class="btn btn-success" onclick="openCreateModal()">
+                    <span>+</span> Create New Admin
+                </button>
+                <button class="btn btn-secondary" onclick="location.reload()">
+                    <span>🔄</span> Refresh
+                </button>
+            </div>
+        </div>
+
+        <div class="alert alert-warning">
+            <span>⚠️</span>
+            <div>
+                <strong>Note:</strong> Deleting super admin accounts requires contacting the development team for manual deletion to ensure system integrity.
+            </div>
+        </div>
+
+        <div class="search-filter-section">
+            <input type="text" class="search-input" placeholder="Search by name, email, or phone" id="searchInput">
+            <button class="btn btn-secondary" onclick="resetSearch()">Reset</button>
+            <button class="btn btn-primary" onclick="filterTable()">Filter</button>
+        </div>
+
+        <div class="data-table-container">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Admin</th>
+                        <th>Contact</th>
+                        <th>Role</th>
+                        <th>Last Login</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="adminTableBody">
+                    <tr>
+                        <td>
+                            <div class="admin-info">
+                                <div class="admin-avatar">JD</div>
+                                <div class="admin-details">
+                                    <div class="admin-name">John Doe</div>
+                                    <div class="admin-email">john.doe@franchise.com</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="contact-info">
+                                <div class="contact-line">+1 (555) 123-4567</div>
+                                <div class="contact-line">New York, USA</div>
+                            </div>
+                        </td>
+                        <td>Super Administrator</td>
+                        <td>2 hours ago</td>
+                        <td>
+                            <span class="status-badge status-active">Active</span>
+                        </td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="btn btn-edit" onclick="openEditModal('John Doe', 'john.doe@franchise.com', '+1 (555) 123-4567', 'Active')">
+                                    ✏️ Edit
+                                </button>
+                                <button class="btn btn-danger" onclick="showDeleteWarning()">
+                                    🗑️ Delete
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="admin-info">
+                                <div class="admin-avatar">SM</div>
+                                <div class="admin-details">
+                                    <div class="admin-name">Sarah Miller</div>
+                                    <div class="admin-email">sarah.miller@franchise.com</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="contact-info">
+                                <div class="contact-line">+1 (555) 234-5678</div>
+                                <div class="contact-line">Los Angeles, USA</div>
+                            </div>
+                        </td>
+                        <td>Super Administrator</td>
+                        <td>5 hours ago</td>
+                        <td>
+                            <span class="status-badge status-active">Active</span>
+                        </td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="btn btn-edit" onclick="openEditModal('Sarah Miller', 'sarah.miller@franchise.com', '+1 (555) 234-5678', 'Active')">
+                                    ✏️ Edit
+                                </button>
+                                <button class="btn btn-danger" onclick="showDeleteWarning()">
+                                    🗑️ Delete
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="admin-info">
+                                <div class="admin-avatar">RJ</div>
+                                <div class="admin-details">
+                                    <div class="admin-name">Robert Johnson</div>
+                                    <div class="admin-email">robert.johnson@franchise.com</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="contact-info">
+                                <div class="contact-line">+1 (555) 345-6789</div>
+                                <div class="contact-line">Chicago, USA</div>
+                            </div>
+                        </td>
+                        <td>Super Administrator</td>
+                        <td>1 day ago</td>
+                        <td>
+                            <span class="status-badge status-inactive">Inactive</span>
+                        </td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="btn btn-edit" onclick="openEditModal('Robert Johnson', 'robert.johnson@franchise.com', '+1 (555) 345-6789', 'Inactive')">
+                                    ✏️ Edit
+                                </button>
+                                <button class="btn btn-danger" onclick="showDeleteWarning()">
+                                    🗑️ Delete
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Create/Edit Modal -->
+    <div id="adminModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modalTitle">Create New Super Admin</h2>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            
+            <form id="adminForm" onsubmit="return handleSubmit(event)">
+                <div class="form-group">
+                    <label class="form-label">Full Name *</label>
+                    <input type="text" class="form-input" id="adminName" required placeholder="Enter full name">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Email Address *</label>
+                    <input type="email" class="form-input" id="adminEmail" required placeholder="admin@franchise.com">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Phone Number</label>
+                    <input type="tel" class="form-input" id="adminPhone" placeholder="+1 (555) 000-0000">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Status *</label>
+                    <div style="display: flex; gap: 20px; margin-top: 8px;">
+                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                            <input type="radio" name="adminStatus" id="statusActive" value="Active" checked style="cursor: pointer;">
+                            <span style="color: #2e7d32; font-weight: 500;">Active</span>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                            <input type="radio" name="adminStatus" id="statusInactive" value="Inactive" style="cursor: pointer;">
+                            <span style="color: #c62828; font-weight: 500;">Inactive</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                    <button type="submit" class="btn btn-success">
+                        <span id="submitBtnText">Create Admin</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Delete Warning Modal -->
+    <div id="deleteModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Delete Super Admin Account</h2>
+                <button class="modal-close" onclick="closeDeleteModal()">&times;</button>
+            </div>
+            
+            <div class="alert alert-danger">
+                <span>🚫</span>
+                <div>
+                    <strong>Important:</strong> Super admin accounts cannot be deleted directly through this interface for security reasons.
+                </div>
+            </div>
+
+            <p style="margin-bottom: 20px; color: #495057;">
+                To delete a super admin account, please:
+            </p>
+
+            <ol style="margin-left: 20px; margin-bottom: 20px; color: #495057;">
+                <li>Contact the development team via email: <strong>dev-team@franchise.com</strong></li>
+                <li>Provide the super admin's name and email address</li>
+                <li>Include a reason for the deletion request</li>
+                <li>Wait for manual verification and deletion by the dev team</li>
+            </ol>
+
+            <p style="color: #6c757d; font-size: 13px; margin-bottom: 20px;">
+                This process ensures system integrity and prevents accidental deletion of critical accounts.
+            </p>
+            
+            <div class="modal-actions">
+                <button type="button" class="btn btn-secondary" onclick="closeDeleteModal()">Close</button>
+                <button type="button" class="btn btn-primary" onclick="contactDevTeam()">
+                    📧 Contact Dev Team
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let isEditMode = false;
+
+        function openCreateModal() {
+            isEditMode = false;
+            document.getElementById('modalTitle').textContent = 'Create New Super Admin';
+            document.getElementById('submitBtnText').textContent = 'Create Admin';
+            document.getElementById('adminForm').reset();
+            document.getElementById('statusActive').checked = true;
+            document.getElementById('adminModal').classList.add('show');
+        }
+
+        function openEditModal(name, email, phone, status) {
+            isEditMode = true;
+            document.getElementById('modalTitle').textContent = 'Edit Super Admin';
+            document.getElementById('submitBtnText').textContent = 'Update Admin';
+            document.getElementById('adminName').value = name;
+            document.getElementById('adminEmail').value = email;
+            document.getElementById('adminPhone').value = phone;
+            
+            if (status === 'Active') {
+                document.getElementById('statusActive').checked = true;
+            } else {
+                document.getElementById('statusInactive').checked = true;
+            }
+            
+            document.getElementById('adminModal').classList.add('show');
+        }
+
+        function closeModal() {
+            document.getElementById('adminModal').classList.remove('show');
+        }
+
+        function showDeleteWarning() {
+            document.getElementById('deleteModal').classList.add('show');
+        }
+
+        function closeDeleteModal() {
+            document.getElementById('deleteModal').classList.remove('show');
+        }
+
+        function contactDevTeam() {
+            window.location.href = 'mailto:dev-team@franchise.com?subject=Super Admin Account Deletion Request&body=Please delete the following super admin account:%0D%0A%0D%0AName: [Enter name]%0D%0AEmail: [Enter email]%0D%0AReason: [Enter reason]';
+        }
+
+        function handleSubmit(event) {
+            event.preventDefault();
+            
+            const statusValue = document.querySelector('input[name="adminStatus"]:checked').value;
+            
+            const formData = {
+                name: document.getElementById('adminName').value,
+                email: document.getElementById('adminEmail').value,
+                phone: document.getElementById('adminPhone').value,
+                status: statusValue
+            };
+
+            if (isEditMode) {
+                alert('Admin account updated successfully!\n\nEmail notification sent to: ' + formData.email);
+            } else {
+                alert('Admin account created successfully!\n\nWelcome email sent to: ' + formData.email);
+            }
+
+            closeModal();
+            
+            // In a real app, this would refresh the table with new data
+            setTimeout(() => {
+                location.reload();
+            }, 1000);
+
+            return false;
+        }
+
+        function filterTable() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const rows = document.querySelectorAll('#adminTableBody tr');
+            
+            rows.forEach(row => {
+                const name = row.querySelector('.admin-name')?.textContent.toLowerCase() || '';
+                const email = row.querySelector('.admin-email')?.textContent.toLowerCase() || '';
+                const phone = row.querySelector('.contact-line')?.textContent.toLowerCase() || '';
+                
+                const isVisible = name.includes(searchTerm) || email.includes(searchTerm) || phone.includes(searchTerm);
+                row.style.display = isVisible ? '' : 'none';
+            });
+        }
+
+        function resetSearch() {
+            document.getElementById('searchInput').value = '';
+            document.querySelectorAll('#adminTableBody tr').forEach(row => {
+                row.style.display = '';
+            });
+        }
+
+        // Search on Enter key
+        document.getElementById('searchInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                filterTable();
+            }
+        });
+
+        // Mobile sidebar toggle
+        if (window.innerWidth <= 576) {
+            const sidebar = document.querySelector('.sidebar');
+            const toggleBtn = document.createElement('button');
+            toggleBtn.innerHTML = '☰';
+            toggleBtn.style.cssText = 'position: fixed; top: 20px; left: 20px; z-index: 1001; background: #007bff; color: white; border: none; padding: 10px; border-radius: 4px;';
+            document.body.appendChild(toggleBtn);
+            
+            toggleBtn.addEventListener('click', () => {
+                sidebar.classList.toggle('open');
+            });
+        }
+
+        console.log('Super Admin Accounts loaded');
+    </script>
+</body>
+</html>
