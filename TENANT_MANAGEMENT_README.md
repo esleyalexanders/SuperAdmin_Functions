@@ -23,7 +23,7 @@ SuperAdmin_Functions/
 ├── tenant_close.html                     # Tenant closure page
 └── tenant_search.html                    # Advanced search page
 
-Index.html                     # Main tenant management page (use this!)
+index.html                     # Main tenant management page (use this!)
 ```
 
 ## 🎯 Key Features
@@ -48,7 +48,7 @@ Index.html                     # Main tenant management page (use this!)
 - **tenant-app.js**: Main application initialization and coordination
 
 ### 3. **Main Entry Point**
-**Index.html** - The main page that includes:
+**index.html** - The main page that includes:
 - Sidebar navigation
 - Tenant management interface
 - Tabs (All, Verified, Awaiting, Rejected, Inactive, Suspended, Closed, Draft)
@@ -59,7 +59,7 @@ Index.html                     # Main tenant management page (use this!)
 ## 🚀 How to Use
 
 ### Basic Usage
-1. Open `Index.html` in your browser
+1. Open `index.html` in your browser
 2. Use tabs to filter tenants by status
 3. Use search and filter dropdowns to refine results
 4. Click on tenant rows to expand franchisees (if any)
@@ -92,7 +92,7 @@ Index.html                     # Main tenant management page (use this!)
 3. Add button handlers in `tenant-app.js` if needed
 
 ### Adding New Filters
-1. Add filter dropdown in `Index.html`
+1. Add filter dropdown in `index.html`
 2. Update `currentFilters` object in `tenant-app.js`
 3. Add listener in `initFilterListeners()` in `tenant-app.js`
 4. Update `filterTenants()` in `tenant-utils.js`
