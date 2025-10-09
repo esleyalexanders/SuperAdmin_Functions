@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tenant Details - Super Admin</title>
+    <link rel="stylesheet" href="assets/css/tenant-management-styles.css">
+    <style>
+        .details-container { max-width: 1100px; margin: 0 auto; }
+        .summary-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; }
+        .summary-title { font-size:24px; font-weight:700; color:#2c3e50; }
+        .summary-sub { color:#6c757d; font-size:14px; }
+        .tabs { display:flex; gap:8px; margin:16px 0; flex-wrap:wrap; }
+        .tab { padding:10px 14px; border:2px solid #e9ecef; border-radius:8px; background:white; color:#6c757d; cursor:pointer; font-weight:600; font-size:14px; }
+        .tab.active { background:#007bff; color:white; border-color:#007bff; }
+        .metrics { display:grid; grid-template-columns: repeat(4, minmax(160px,1fr)); gap:12px; margin:16px 0; }
+        .metric { background:white; border:2px solid #e9ecef; border-radius:12px; padding:16px; }
+        .metric-label { color:#6c757d; font-size:12px; margin-bottom:6px; }
+        .metric-value { font-size:20px; font-weight:700; color:#2c3e50; }
+        .section { background:white; border-radius:12px; box-shadow: 0 2px 4px rgba(0,0,0,0.08); padding:20px; margin-bottom:16px; }
+        .section-title { font-size:16px; font-weight:600; color:#2c3e50; margin-bottom:12px; padding-bottom:8px; border-bottom:2px solid #e9ecef; }
+        .grid-2 { display:grid; grid-template-columns: 1fr 1fr; gap:16px; }
+        .kv { display:flex; justify-content:space-between; gap:12px; padding:8px 0; border-bottom:1px dashed #f1f3f5; }
+        .kv:last-child { border-bottom:none; }
+        .kv-label { color:#6c757d; font-size:13px; }
+        .kv-value { color:#2c3e50; font-weight:600; font-size:14px; }
+        .actions { display:flex; gap:8px; flex-wrap:wrap; }
+        .btn-icon { padding:8px 10px; }
+        .pill { display:inline-block; padding:6px 10px; border-radius:999px; font-size:12px; font-weight:600; }
+        .row-list { display:flex; flex-direction:column; gap:8px; }
+        .franchisee-item { border:1px solid #e9ecef; border-radius:8px; padding:10px 12px; display:flex; justify-content:space-between; align-items:center; }
+        .form-grid { display:grid; grid-template-columns: 1fr 1fr; gap:16px; }
+        .form-grid.single { grid-template-columns: 1fr; }
+        .form-group { display:flex; flex-direction:column; gap:6px; }
+        .form-label { font-weight:500; color:#495057; font-size:14px; }
+        .form-input, .form-select, .form-textarea { padding:12px 16px; border:1px solid #dee2e6; border-radius:6px; font-size:14px; background:#f8f9fa; }
+        .form-input:focus, .form-select:focus, .form-textarea:focus { outline:none; border-color:#007bff; background:white; box-shadow:0 0 0 3px rgba(0,123,255,0.1); }
+        .hidden { display:none; }
+        @media (max-width:768px){ .grid-2{ grid-template-columns: 1fr; } .metrics{ grid-template-columns: repeat(2,1fr);} }
+    </style>
+</head>
+<body>
+    <div class="main-content">
+        <div class="details-container">
+            <div class="summary-header">
+                <div>
+                    <div class="summary-title" id="tenantName">Tenant</div>
+                    <div class="summary-sub" id="tenantDomain"></div>
+                </div>
+                <div class="actions">
+                    <a class="btn btn-outline btn-icon" id="btnEdit" title="Edit">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 20h9" stroke="#6c757d" stroke-width="2" stroke-linecap="round"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z" stroke="#6c757d" stroke-width="2" stroke-linejoin="round"/></svg>
+                    </a>
+                    <button class="btn btn-outline btn-icon" id="btnAudit" title="Audit Log">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="4" width="18" height="16" rx="2" ry="2" stroke="#6c757d" stroke-width="2"/><path d="M7 8h10M7 12h10M7 16h6" stroke="#6c757d" stroke-width="2" stroke-linecap="round"/></svg>
+                    </button>
+                </div>
+            </div>
+
+            <div class="tabs">
+                <button class="tab active" id="tabOverviewBtn">Overview</button>
+                <button class="tab" id="tabDetailsBtn">Details</button>
+                <button class="tab" id="tabConfigBtn">Configuration</button>
+            </div>
+
+            <div class="section" id="tabOverview">
+                <div class="actions" id="lifecycleActions"></div>
+                <div style="margin-top:12px; display:flex; align-items:center; gap:8px;">
+                    <span id="statusGroup" class="pill">Active</span>
+                    <span class="${getStatusBadge ? '' : ''}" id="statusText"></span>
+                    <span id="typePill" class="pill">Type</span>
+                </div>
+            </div>
+
+            <div class="metrics" id="metrics">
+                <div class="metric"><div class="metric-label">Franchisees</div><div class="metric-value" id="metricFranchisees">--</div></div>
+                <div class="metric"><div class="metric-label">Staff</div><div class="metric-value" id="metricStaff">--</div></div>
+                <div class="metric"><div class="metric-label">Subscription</div><div class="metric-value" id="metricPlan">--</div></div>
+                <div class="metric"><div class="metric-label">Last Activity</div><div class="metric-value" id="metricActivity">--</div></div>
+            </div>
+
+            <div class="grid-2" id="overviewBlocks">
+                <div class="section">
+                    <div class="section-title">Contact</div>
+                    <div class="kv"><div class="kv-label">Name</div><div class="kv-value" id="contactName">—</div></div>
+                    <div class="kv"><div class="kv-label">Email</div><div class="kv-value" id="contactEmail">—</div></div>
+                    <div class="kv"><div class="kv-label">Phone</div><div class="kv-value" id="contactPhone">—</div></div>
+                    <div class="kv"><div class="kv-label">Created</div><div class="kv-value" id="createdAt">—</div></div>
+                </div>
+                <div class="section">
+                    <div class="section-title">Subscription</div>
+                    <div class="kv"><div class="kv-label">Plan</div><div class="kv-value" id="planName">—</div></div>
+                    <div class="kv"><div class="kv-label">Payment Status</div><div class="kv-value" id="paymentStatus">—</div></div>
+                    <div class="kv"><div class="kv-label">Status Group</div><div class="kv-value" id="statusGroupText">—</div></div>
+                </div>
+            </div>
+
+            <div class="section" id="franchiseesSection" style="display:none;">
+                <div class="section-title">Franchisees</div>
+                <div class="row-list" id="franchiseeList"></div>
+            </div>
+
+            <!-- Details Tab -->
+            <div class="section hidden" id="tabDetails">
+                <div class="section-title">Edit Details</div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">Brand Name</label>
+                        <input class="form-input" id="d_brandName" placeholder="Brand name">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Subdomain</label>
+                        <input class="form-input" id="d_subdomain" placeholder="subdomain">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Contact Name</label>
+                        <input class="form-input" id="d_contactName" placeholder="Contact name">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Email</label>
+                        <input class="form-input" id="d_email" placeholder="email@domain.com">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Phone</label>
+                        <input class="form-input" id="d_phone" placeholder="+1 (555) 123-4567">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Plan</label>
+                        <select class="form-select" id="d_plan">
+                            <option value="basic">Basic</option>
+                            <option value="professional">Professional</option>
+                            <option value="enterprise">Enterprise</option>
+                        </select>
+                    </div>
+                </div>
+                <div style="margin-top:12px; display:flex; gap:8px; justify-content:flex-end;">
+                    <button class="btn btn-secondary" id="d_reset">Reset</button>
+                    <button class="btn btn-primary" id="d_save">Save Changes</button>
+                </div>
+            </div>
+
+            <!-- Configuration Tab -->
+            <div class="section hidden" id="tabConfig">
+                <div class="section-title">Configuration</div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">Timezone</label>
+                        <select class="form-select" id="c_timezone">
+                            <option value="UTC-8">UTC-8 (Pacific)</option>
+                            <option value="UTC-5">UTC-5 (Eastern)</option>
+                            <option value="UTC+0">UTC+0 (GMT)</option>
+                            <option value="UTC+8">UTC+8 (China)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Language</label>
+                        <select class="form-select" id="c_language">
+                            <option value="en">English</option>
+                            <option value="es">Spanish</option>
+                            <option value="fr">French</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Currency</label>
+                        <select class="form-select" id="c_currency">
+                            <option value="USD">USD</option>
+                            <option value="EUR">EUR</option>
+                            <option value="GBP">GBP</option>
+                        </select>
+                    </div>
+                </div>
+                <div style="margin-top:12px; display:flex; gap:8px; justify-content:flex-end;">
+                    <button class="btn btn-secondary" id="c_reset">Reset</button>
+                    <button class="btn btn-primary" id="c_save">Save Configuration</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Minimal Audit Modal -->
+    <div id="auditLogModal" class="modal" style="display:none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Audit Log</h2>
+                <button class="modal-close" id="auditLogModalClose">&times;</button>
+            </div>
+            <div class="modal-body" id="auditLogContent"></div>
+        </div>
+    </div>
+
+    <script src="assets/js/tenant-data.js"></script>
+    <script src="assets/js/tenant-utils.js"></script>
+    <script src="assets/js/tenant-lifecycle.js"></script>
+    <script src="assets/js/modal-manager.js"></script>
+    <script>
+        function getParam(name){ const p=new URLSearchParams(location.search); return p.get(name); }
+        function filterAndRender(){ render(); }
+        function render(){
+            const id = parseInt(getParam('tenantId') || getParam('id') || '0');
+            const t = tenants.find(x => x.id === id) || tenants[0];
+            if(!t){ document.querySelector('.details-container').innerHTML = '<div class="section">Tenant not found</div>'; return; }
+
+            const isFranchisor = Array.isArray(t.franchisees) && t.franchisees.length>0;
+            const statusGroup = (typeof getStatusGroup === 'function') ? getStatusGroup(t.status) : (t.status==='verified'||t.status==='awaiting'?'Active':'Inactive');
+            const grouped = (typeof getGroupedStatusText==='function') ? getGroupedStatusText(t.status) : `${statusGroup}, ${t.status}`;
+            const derived = (typeof deriveContactInfo === 'function') ? deriveContactInfo(t) : {name:'—',email:t.contact||'—',phone:'—'};
+
+            document.getElementById('tenantName').textContent = t.name;
+            document.getElementById('tenantDomain').textContent = `${t.subdomain}.franchise.com`;
+            document.getElementById('statusGroup').className = 'pill ' + (statusGroup==='Active'?'badge verified':'badge suspended');
+            document.getElementById('statusGroup').textContent = statusGroup;
+            document.getElementById('statusText').textContent = grouped.replace(/^\(|\)$/g,'');
+            const typePill = document.getElementById('typePill');
+            typePill.textContent = isFranchisor ? 'Franchisor' : 'Single Store';
+            typePill.className = 'pill ' + (isFranchisor ? 'type-franchisor' : 'type-single');
+
+            document.getElementById('metricFranchisees').textContent = isFranchisor ? t.franchisees.length : '--';
+            document.getElementById('metricStaff').textContent = t.staffTotal || (isFranchisor ? '--' : 0);
+            document.getElementById('metricPlan').textContent = (t.plan||'').charAt(0).toUpperCase()+(t.plan||'').slice(1);
+            const rel = (typeof formatRelative==='function') ? formatRelative(t.lastActivity) : t.lastActivity;
+            document.getElementById('metricActivity').textContent = rel || '—';
+
+            document.getElementById('contactName').textContent = derived.name || '—';
+            document.getElementById('contactEmail').textContent = derived.email || '—';
+            document.getElementById('contactPhone').textContent = derived.phone || '—';
+            document.getElementById('createdAt').textContent = (typeof formatDate==='function') ? formatDate(t.created) : t.created;
+            document.getElementById('planName').textContent = document.getElementById('metricPlan').textContent;
+            document.getElementById('paymentStatus').textContent = (t.paymentStatus||'').charAt(0).toUpperCase()+(t.paymentStatus||'').slice(1);
+            document.getElementById('statusGroupText').textContent = statusGroup;
+
+            // Franchisees
+            const frSection = document.getElementById('franchiseesSection');
+            const frList = document.getElementById('franchiseeList');
+            frList.innerHTML = '';
+            frSection.style.display = isFranchisor ? 'block' : 'none';
+            if(isFranchisor){
+                t.franchisees.forEach(f => {
+                    const div = document.createElement('div');
+                    div.className = 'franchisee-item';
+                    div.innerHTML = `<div><strong>${f.name}</strong></div><div><span class="${getStatusBadge(f.status)}">${getGroupedStatusText(f.status)}</span></div>`;
+                    frList.appendChild(div);
+                });
+            }
+
+            // Actions visibility
+            const actions = document.getElementById('lifecycleActions');
+            actions.innerHTML = '';
+            const makeBtn = (cls, title, html, fn) => { const b=document.createElement('button'); b.className='btn '+cls+' btn-icon'; b.title=title; b.innerHTML=html; b.addEventListener('click', fn); return b; };
+            if(t.status==='awaiting'){
+                actions.appendChild(makeBtn('btn-success','Verify', '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M20 6L9 17l-5-5" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> Verify', ()=>verifyTenant(t.id)));
+            }
+            if(t.status==='verified'){
+                actions.appendChild(makeBtn('btn-warning','Suspend', '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M10 4h2v16h-2zM14 4h2v16h-2z" fill="#212529"/></svg> Suspend', ()=>suspendTenant(t.id)));
+            }
+            if(t.status==='suspended'){
+                actions.appendChild(makeBtn('btn-success','Restore', '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M21 12a9 9 0 1 1-2.64-6.36" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/><path d="M21 3v6h-6" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> Restore', ()=>restoreTenant(t.id)));
+            }
+            if(t.status!=='closed'){
+                actions.appendChild(makeBtn('btn-danger','Close', '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="9" stroke="#ffffff" stroke-width="2"/><path d="M15 9l-6 6M9 9l6 6" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/></svg> Close', ()=>closeTenant(t.id)));
+            }
+
+            // Edit/Audit
+            document.getElementById('btnEdit').href = `tenant_edit.html?tenantId=${t.id}`;
+            document.getElementById('btnAudit').onclick = () => { if(typeof showAuditLogModal==='function') showAuditLogModal(t.id); };
+
+            // Populate Details tab
+            document.getElementById('d_brandName').value = t.name || '';
+            document.getElementById('d_subdomain').value = t.subdomain || '';
+            document.getElementById('d_contactName').value = derived.name || '';
+            document.getElementById('d_email').value = derived.email || '';
+            document.getElementById('d_phone').value = derived.phone || '';
+            const planSel = document.getElementById('d_plan');
+            if (planSel) planSel.value = (t.plan||'').toLowerCase();
+
+            // Populate Config tab (mock defaults)
+            document.getElementById('c_timezone').value = 'UTC-8';
+            document.getElementById('c_language').value = 'en';
+            document.getElementById('c_currency').value = 'USD';
+        }
+
+        function switchTab(which){
+            ['tabOverview','tabDetails','tabConfig'].forEach(id=>{
+                const el=document.getElementById(id);
+                if(!el) return;
+                el.classList.toggle('hidden', id!==which);
+            });
+            ['tabOverviewBtn','tabDetailsBtn','tabConfigBtn'].forEach(id=>{
+                const b=document.getElementById(id);
+                if(!b) return;
+                b.classList.toggle('active', id.toLowerCase().includes(which.replace('tab','').toLowerCase()));
+            });
+        }
+
+        function bindTabs(){
+            const o=document.getElementById('tabOverviewBtn');
+            const d=document.getElementById('tabDetailsBtn');
+            const c=document.getElementById('tabConfigBtn');
+            if(o) o.addEventListener('click', ()=>switchTab('tabOverview'));
+            if(d) d.addEventListener('click', ()=>switchTab('tabDetails'));
+            if(c) c.addEventListener('click', ()=>switchTab('tabConfig'));
+            switchTab('tabOverview');
+        }
+
+        if(document.readyState==='loading'){
+            document.addEventListener('DOMContentLoaded', ()=>{ render(); bindTabs(); });
+        } else { render(); bindTabs(); }
+    </script>
+</body>
+</html>
+
+

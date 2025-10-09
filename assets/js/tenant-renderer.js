@@ -16,7 +16,10 @@ function renderTenantCard(tenant) {
                     <div class="tenant-name">
                         ${caret}
                         <span>${tenant.name}</span>
-                        <span class="${getStatusBadge(tenant.status)}">${getStatusText(tenant.status)}</span>
+                        <span class="${getStatusBadge(tenant.status)}">${getGroupedStatusText(tenant.status)}</span>
+                        ${Array.isArray(tenant.franchisees) && tenant.franchisees.length > 0
+                            ? '<span class="badge type-franchisor">Franchisor</span>'
+                            : '<span class="badge type-single">Single Store</span>'}
                         <span class="status-indicator">
                             <span class="${getStatusDot(tenant.status)}"></span>
                         </span>
@@ -34,13 +37,12 @@ function renderTenantCard(tenant) {
                 </div>
             </label>
             <div class="tenant-actions">
-                <a class="btn btn-outline" href="SuperAdmin_Functions/tenant_edit.html?tenantId=${tenant.id}">
-                    <span>✏️</span> Edit
+                <a class="btn btn-outline" href="tenant_edit.html?tenantId=${tenant.id}">
+                    <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 20h9" stroke="#6c757d" stroke-width="2" stroke-linecap="round"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z" stroke="#6c757d" stroke-width="2" stroke-linejoin="round"/></svg></span> Edit
                 </a>
                 <button class="btn btn-outline" onclick="showAuditLogModal(${tenant.id})">
-                    <span>📋</span> Audit Log
+                    <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="4" width="18" height="16" rx="2" ry="2" stroke="#6c757d" stroke-width="2"/><path d="M7 8h10M7 12h10M7 16h6" stroke="#6c757d" stroke-width="2" stroke-linecap="round"/></svg></span> Audit Log
                 </button>
-                ${renderActionButtons(tenant)}
             </div>
         </div>
         ${hasChildren ? `<div class="franchisee-list" id="fr-list-${tenant.id}" style="display:none; margin-top:16px; padding-left:24px;"></div>` : ''}
@@ -65,28 +67,28 @@ function renderActionButtons(tenant) {
     if (isAdminUser && tenant.status === 'awaiting') {
         buttons.push(`
             <button class="btn btn-success" onclick="verifyTenant(${tenant.id})">
-                <span>✓</span> Verify
+                <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M20 6L9 17l-5-5" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span> Verify
             </button>
             <button class="btn btn-danger" onclick="rejectTenant(${tenant.id})">
-                <span>✗</span> Reject
+                <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M18 6L6 18M6 6l12 12" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/></svg></span> Reject
             </button>
         `);
     }
     
-    // Suspend for verified/inactive
-    if (tenant.status === 'verified' || tenant.status === 'inactive') {
+    // Suspend for active group (verified)
+    if (tenant.status === 'verified') {
         buttons.push(`
             <button class="btn btn-warning" onclick="suspendTenant(${tenant.id})">
-                <span>⏸</span> Suspend
+                <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M10 4h2v16h-2zM14 4h2v16h-2z" fill="#212529"/></svg></span> Suspend
             </button>
         `);
     }
     
-    // Restore for suspended
+    // Restore for suspended only
     if (tenant.status === 'suspended') {
         buttons.push(`
             <button class="btn btn-success" onclick="restoreTenant(${tenant.id})">
-                <span>↻</span> Restore
+                <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M21 12a9 9 0 1 1-2.64-6.36" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/><path d="M21 3v6h-6" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span> Restore
             </button>
         `);
     }
@@ -95,7 +97,7 @@ function renderActionButtons(tenant) {
     if (tenant.status !== 'closed') {
         buttons.push(`
             <button class="btn btn-danger" onclick="closeTenant(${tenant.id})">
-                <span>🚫</span> Close
+                <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="9" stroke="#ffffff" stroke-width="2"/><path d="M15 9l-6 6M9 9l6 6" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/></svg></span> Close
             </button>
         `);
     }
@@ -147,10 +149,10 @@ function renderFranchiseeList(listElement, tenant) {
             <div style="display:flex; align-items:center; justify-content:space-between;">
                 <div>
                     <strong>${f.name}</strong>
-                    <span class="${getStatusBadge(f.status)}" style="margin-left:8px;">${getStatusText(f.status)}</span>
+                    <span class="${getStatusBadge(f.status)}" style="margin-left:8px;">${getGroupedStatusText(f.status)}</span>
                 </div>
                 <div style="display:flex; gap:8px;">
-                    <a class="btn btn-outline" href="SuperAdmin_Functions/tenant_edit.html?franchiseeId=${f.id}" style="font-size:13px; padding:6px 12px;">
+                    <a class="btn btn-outline" href="tenant_edit.html?franchiseeId=${f.id}" style="font-size:13px; padding:6px 12px;">
                         Edit
                     </a>
                 </div>
@@ -160,8 +162,8 @@ function renderFranchiseeList(listElement, tenant) {
     
     const createBtn = `
         <div style="padding: 8px 0; margin-top:12px;">
-            <a class="btn btn-primary" href="SuperAdmin_Functions/tenant_create_account.html?franchisorId=${tenant.id}">
-                <span>+</span> Create Franchisee
+            <a class="btn btn-primary" href="tenant_create_account.html?franchisorId=${tenant.id}">
+                <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 5v14M5 12h14" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/></svg></span> Create Franchisee
             </a>
         </div>
     `;
@@ -178,7 +180,7 @@ function renderAllTenants(tenants, containerId) {
     if (tenants.length === 0) {
         container.innerHTML = `
             <div class="empty-state">
-                <div class="empty-state-icon">🔍</div>
+                <div class="empty-state-icon"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="11" cy="11" r="7" stroke="#6c757d" stroke-width="2"/><path d="M21 21l-4.3-4.3" stroke="#6c757d" stroke-width="2" stroke-linecap="round"/></svg></div>
                 <div class="empty-state-title">No Tenants Found</div>
                 <div class="empty-state-text">Try adjusting your filters or create a new tenant.</div>
             </div>
@@ -186,63 +188,100 @@ function renderAllTenants(tenants, containerId) {
         return;
     }
     
+    const table = document.createElement('table');
+    table.className = 'tenant-table';
+    table.innerHTML = `
+        <thead>
+            <tr>
+                <th style="width:36px;"><input type="checkbox" id="selectAllTenants"></th>
+                <th>Brand Name</th>
+                <th>Contact</th>
+                <th>Type</th>
+                <th>Franchisees</th>
+                <th>Staff</th>
+                <th>System Status</th>
+                <th>Subscription Plan</th>
+                <th style="min-width:160px;">Last Activity</th>
+                <th>Created</th>
+                <th style="width:84px; text-align:center;">Actions</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    `;
+    const tbody = table.querySelector('tbody');
+    
     tenants.forEach(tenant => {
-        const card = renderTenantCard(tenant);
-        container.appendChild(card);
+        const isFranchisor = Array.isArray(tenant.franchisees) && tenant.franchisees.length > 0;
+        const row = document.createElement('tr');
+        const staffCount = (tenant.staffTotal || (isFranchisor ? (tenant.franchisees || []).reduce((a) => a, 0) : (tenant.staffTotal || 0))); // placeholder if not provided
+        const derived = deriveContactInfo(tenant);
+        const contactName = derived.name;
+        const contactEmail = derived.email;
+        const contactPhone = derived.phone;
+        row.innerHTML = `
+            <td><input type=\"checkbox\" class=\"tenant-checkbox\" value=\"${tenant.id}\"></td>
+            <td>
+                <div style=\"display:flex; align-items:center; gap:8px;\">
+                    <strong>${tenant.name}</strong>
+                </div>
+                <div style=\"font-size:12px; color:#6c757d; margin-top:2px;\">${tenant.subdomain}.franchise.com</div>
+            </td>
+            <td>
+                <div style=\"display:flex; flex-direction:column; gap:2px;\">
+                    <strong>${contactName || '—'}</strong>
+                    <span style=\"color:#6c757d;\">${contactEmail || '—'}</span>
+                    <span style=\"color:#6c757d;\">${contactPhone || '—'}</span>
+                </div>
+            </td>
+            <td>
+                <span class=\"badge ${isFranchisor ? 'type-franchisor' : 'type-single'}\">${isFranchisor ? 'Franchisor' : 'Single Store'}</span>
+            </td>
+            <td style=\"text-align:center;\">
+                ${isFranchisor ? (tenant.franchisees || []).length : '--'}
+                <div style=\"font-size:11px; color:#6c757d;\">Total</div>
+            </td>
+            <td style=\"text-align:center;\">
+                ${tenant.staffTotal || (isFranchisor ? '--' : (tenant.staffTotal || 0))}
+                <div style=\"font-size:11px; color:#6c757d;\">Total</div>
+            </td>
+            <td>
+                <span class=\"${getStatusBadge(tenant.status)}\">${getStatusGroup(tenant.status)}</span>
+                <div style=\"font-size:12px; color:#6c757d; margin-top:4px;\">${getStatusText(tenant.status)}</div>
+            </td>
+            <td>
+                ${tenant.plan.charAt(0).toUpperCase() + tenant.plan.slice(1)}
+                <div style=\"font-size:12px; color:#6c757d;\">${tenant.paymentStatus === 'paid' ? 'Active' : (tenant.paymentStatus === 'failed' ? 'Failed' : 'Expired')}</div>
+            </td>
+            <td style="white-space:nowrap;">
+                ${formatRelative(tenant.lastActivity)}
+                <div style="font-size:12px; color:#6c757d;">Login</div>
+            </td>
+            <td>${formatDate(tenant.created)}</td>
+            <td>
+                <div style="display:flex; gap:6px; justify-content:center;">
+                    <a class="btn btn-outline btn-icon" href="tenant_edit.html?tenantId=${tenant.id}" title="Edit">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 20h9" stroke="#6c757d" stroke-width="2" stroke-linecap="round"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z" stroke="#6c757d" stroke-width="2" stroke-linejoin="round"/></svg>
+                    </a>
+                    <button class="btn btn-outline btn-icon" onclick="showAuditLogModal(${tenant.id})" title="Audit Log">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="4" width="18" height="16" rx="2" ry="2" stroke="#6c757d" stroke-width="2"/><path d="M7 8h10M7 12h10M7 16h6" stroke="#6c757d" stroke-width="2" stroke-linecap="round"/></svg>
+                    </button>
+                </div>
+            </td>
+        `;
+        tbody.appendChild(row);
     });
+    
+    container.appendChild(table);
+    
+    // Hook up select all
+    const selectAll = table.querySelector('#selectAllTenants');
+    if (selectAll) {
+        selectAll.addEventListener('change', () => {
+            const checks = table.querySelectorAll('.tenant-checkbox');
+            checks.forEach(cb => { cb.checked = selectAll.checked; });
+            updateBulkActionsVisibility();
+        });
+    }
 }
 
-function renderDrafts(containerId) {
-    const container = document.getElementById(containerId);
-    if (!container) return;
-    
-    const drafts = getDrafts();
-    container.innerHTML = '';
-    
-    if (drafts.length === 0) {
-        container.innerHTML = `
-            <div class="empty-state">
-                <div class="empty-state-icon">📝</div>
-                <div class="empty-state-title">No Drafts</div>
-                <div class="empty-state-text">All tenant accounts have been completed or no drafts exist.</div>
-            </div>
-        `;
-        return;
-    }
-    
-    drafts.forEach(draft => {
-        const name = (draft.data && (draft.data.franchisorName || draft.data.contactName || draft.data.subdomain)) || 'Untitled Tenant';
-        const type = draft.data && draft.data.tenantType ? draft.data.tenantType : 'single';
-        const when = new Date(draft.updatedAt || Date.now()).toLocaleString();
-        
-        const card = document.createElement('div');
-        card.style.cssText = 'border:2px dashed #c7d3ff; background:#f6f9ff; border-radius:12px; padding:16px; display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;';
-        card.innerHTML = `
-            <div>
-                <div style="margin-bottom:6px;">
-                    <strong style="color:#2c3e50; font-size:15px;">${name}</strong>
-                    <span class="badge draft" style="margin-left:8px;">Draft</span>
-                </div>
-                <div style="color:#6c757d; font-size:13px;">
-                    Updated ${when} • Type: ${type === 'franchisor' ? 'Franchisor' : 'Single Store'}
-                </div>
-            </div>
-            <div style="display:flex; gap:8px;">
-                <a class="btn btn-primary" href="SuperAdmin_Functions/tenant_create_account.html?draftId=${draft.id}">
-                    Continue
-                </a>
-                <button class="btn btn-danger" onclick="handleDeleteDraft('${draft.id}')">
-                    Delete
-                </button>
-            </div>
-        `;
-        container.appendChild(card);
-    });
-}
-
-function handleDeleteDraft(draftId) {
-    if (confirm('Are you sure you want to delete this draft?')) {
-        deleteDraft(draftId);
-        renderDrafts('draftCards');
-    }
-}
+// Draft rendering removed

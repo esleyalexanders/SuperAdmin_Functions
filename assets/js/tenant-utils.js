@@ -3,13 +3,11 @@
 // Status Helper Functions
 function getStatusBadge(status) {
     const badges = {
-        draft: 'badge draft',
         review: 'badge review',
         awaiting: 'badge awaiting',
         suspended: 'badge suspended',
         closed: 'badge closed',
         verified: 'badge verified',
-        rejected: 'badge rejected',
         inactive: 'badge inactive'
     };
     return badges[status] || 'badge';
@@ -17,13 +15,11 @@ function getStatusBadge(status) {
 
 function getStatusDot(status) {
     const dots = {
-        draft: 'status-dot draft',
         review: 'status-dot review',
         awaiting: 'status-dot awaiting',
         suspended: 'status-dot suspended',
         closed: 'status-dot closed',
         verified: 'status-dot verified',
-        rejected: 'status-dot rejected',
         inactive: 'status-dot inactive'
     };
     return dots[status] || 'status-dot';
@@ -31,16 +27,78 @@ function getStatusDot(status) {
 
 function getStatusText(status) {
     const texts = {
-        draft: 'Draft (Not Paid)',
         review: 'In Review',
         awaiting: 'Awaiting Verification',
         suspended: 'Suspended',
         closed: 'Closed',
-        verified: 'Verified (Paid, Verified)',
-        rejected: 'Rejected',
+        verified: 'Verified',
         inactive: 'Inactive'
     };
     return texts[status] || status;
+}
+
+// Grouped status label, e.g. (Active, Verified) or (Inactive, Suspended)
+function getGroupedStatusText(status) {
+    let group = '';
+    if (status === 'verified' || status === 'awaiting') {
+        group = 'Active';
+    } else if (status === 'suspended' || status === 'closed') {
+        group = 'Inactive';
+    } else {
+        // Fallback for uncommon statuses
+        group = '';
+    }
+    const text = getStatusText(status);
+    return group ? `(${group}, ${text})` : text;
+}
+
+// Return only the group label (Active/Inactive) based on status
+function getStatusGroup(status) {
+    if (status === 'verified' || status === 'awaiting') return 'Active';
+    if (status === 'suspended' || status === 'closed') return 'Inactive';
+    return '';
+}
+
+// Relative time from ISO date string
+function formatRelative(dateString) {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffMs = now - date;
+    const sec = Math.floor(diffMs / 1000);
+    const min = Math.floor(sec / 60);
+    const hr = Math.floor(min / 60);
+    const day = Math.floor(hr / 24);
+    if (day > 0) return `${day} day${day>1?'s':''} ago`;
+    if (hr > 0) return `${hr} hour${hr>1?'s':''} ago`;
+    if (min > 0) return `${min} min ago`;
+    return `just now`;
+}
+
+// Create display-ready contact info when data is incomplete
+function deriveContactInfo(tenant) {
+    const email = tenant.contact || '';
+    let name = tenant.contactName || '';
+    let phone = tenant.contactPhone || '';
+    
+    if (!name && email) {
+        const user = email.split('@')[0] || '';
+        name = user
+            .replace(/\./g, ' ')
+            .replace(/[-_]/g, ' ')
+            .split(' ')
+            .filter(Boolean)
+            .map(w => w.charAt(0).toUpperCase() + w.slice(1))
+            .join(' ');
+        if (!name) name = 'Account Owner';
+    }
+    
+    if (!phone) {
+        const seed = (tenant.id || 0) + (tenant.subdomain ? tenant.subdomain.length : 0);
+        const digits = (1000 + (seed * 73) % 8999).toString().padStart(4, '0');
+        phone = `+1 (555) ${digits.slice(0,3)}-${digits.slice(1)}`;
+    }
+    
+    return { name, email: email || 'owner@' + (tenant.subdomain || 'tenant') + '.com', phone };
 }
 
 // Format Helper Functions
@@ -94,7 +152,17 @@ function filterTenants(tenants, filters) {
         ].some(v => (v || '').toLowerCase().includes(keyword.toLowerCase()));
         
         const matchPlan = !plan || tenant.plan === plan;
-        const matchStatus = !status || tenant.status === status;
+        // Group statuses: Active (verified, awaiting), Inactive (suspended, closed)
+        let matchStatus = true;
+        if (status === 'active') {
+            matchStatus = tenant.status === 'verified' || tenant.status === 'awaiting';
+        } else if (status === 'inactive') {
+            matchStatus = tenant.status === 'suspended' || tenant.status === 'closed';
+        }
+        // Exact status when provided (verified/awaiting/suspended/closed)
+        if (status && status !== 'active' && status !== 'inactive') {
+            matchStatus = tenant.status === status;
+        }
         const matchIndustry = !industry || tenant.industry === industry;
         const matchBusinessType = !businessType || tenant.businessType === businessType;
 
@@ -117,32 +185,7 @@ function updateBulkActionsVisibility() {
     }
 }
 
-// Draft Management
-function getDrafts() {
-    return JSON.parse(localStorage.getItem('tenantDrafts') || '[]')
-        .sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0));
-}
-
-function saveDraft(draftData) {
-    const drafts = getDrafts();
-    const existingIndex = drafts.findIndex(d => d.id === draftData.id);
-    
-    draftData.updatedAt = Date.now();
-    
-    if (existingIndex >= 0) {
-        drafts[existingIndex] = draftData;
-    } else {
-        drafts.push(draftData);
-    }
-    
-    localStorage.setItem('tenantDrafts', JSON.stringify(drafts));
-}
-
-function deleteDraft(draftId) {
-    const drafts = getDrafts();
-    const filtered = drafts.filter(d => d.id !== draftId);
-    localStorage.setItem('tenantDrafts', JSON.stringify(filtered));
-}
+// Draft management removed
 
 // Admin Check
 function isAdmin() {
@@ -156,6 +199,8 @@ function updateAdminTabsVisibility() {
     adminTabs.forEach(tab => {
         tab.style.display = adminValue ? 'inline-block' : 'none';
     });
+
+    // No substatus UI anymore
 }
 
 // Mobile Sidebar Toggle

@@ -301,9 +301,33 @@ body {
 
 /* Tenant Cards */
 .tenant-cards {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
+    display: block;
+}
+/* Management Table */
+.tenant-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.tenant-table thead th {
+    text-align: left;
+    font-weight: 600;
+    font-size: 13px;
+    color: #495057;
+    padding: 10px 12px;
+    border-bottom: 2px solid #e9ecef;
+    background: #f8f9fa;
+}
+
+.tenant-table tbody td {
+    padding: 12px;
+    border-bottom: 1px solid #f1f3f5;
+    vertical-align: middle;
+    font-size: 14px;
+}
+
+.tenant-table tbody tr:hover {
+    background: #f8f9fa;
 }
 
 .tenant-card {
@@ -361,6 +385,15 @@ body {
     font-size: 12px;
     font-weight: 500;
 }
+.badge.type-franchisor {
+    background: #e6ffed;
+    color: #0f5132;
+}
+
+.badge.type-single {
+    background: #e7f5ff;
+    color: #084298;
+}
 
 .badge.verified {
     background: #d1e7dd;
@@ -392,10 +425,7 @@ body {
     color: #721c24;
 }
 
-.badge.draft {
-    background: #cfe2ff;
-    color: #084298;
-}
+/* .badge.draft removed */
 
 /* Status Indicators */
 .status-indicator {
@@ -430,13 +460,9 @@ body {
     background: #6c757d;
 }
 
-.status-dot.rejected {
-    background: #dc3545;
-}
+/* .status-dot.rejected removed */
 
-.status-dot.draft {
-    background: #007bff;
-}
+/* .status-dot.draft removed */
 
 /* Bulk Actions */
 .bulk-actions-panel {

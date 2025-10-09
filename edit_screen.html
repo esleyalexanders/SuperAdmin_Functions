@@ -1,0 +1,1092 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Tenant - Super Admin</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 250px;
+            background: white;
+            box-shadow: 2px 0 4px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+            padding: 0;
+            position: fixed;
+            height: 100vh;
+            z-index: 1000;
+        }
+
+        .sidebar-icon {
+            width: 100%;
+            height: auto;
+            padding: 14px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #6c757d;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+        }
+
+        .sidebar-icon:hover {
+            background: #f8f9fa;
+            color: #007bff;
+        }
+
+        .main-content {
+            flex: 1;
+            margin-left: 250px;
+            padding: 30px;
+            max-width: 1200px;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .back-link {
+            color: #007bff;
+            text-decoration: none;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        .page-title {
+            font-size: 28px;
+            font-weight: 600;
+            color: #2c3e50;
+            text-align: center;
+            flex: 1;
+        }
+
+        .save-button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .save-button:hover {
+            background: #0056b3;
+        }
+
+        .form-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 40px;
+        }
+
+        .form-section {
+            margin-bottom: 40px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-row.full-width {
+            grid-template-columns: 1fr;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-label {
+            font-weight: 500;
+            color: #495057;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .required {
+            color: #dc3545;
+        }
+
+        .form-input {
+            padding: 12px 16px;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #007bff;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(0,123,255,0.1);
+        }
+
+        .form-select {
+            padding: 12px 16px;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            font-size: 14px;
+            background: #f8f9fa;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .form-select:focus {
+            outline: none;
+            border-color: #007bff;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(0,123,255,0.1);
+        }
+
+        .form-textarea {
+            padding: 12px 16px;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            font-size: 14px;
+            resize: vertical;
+            min-height: 100px;
+            background: #f8f9fa;
+            transition: all 0.3s ease;
+        }
+
+        .form-textarea:focus {
+            outline: none;
+            border-color: #007bff;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(0,123,255,0.1);
+        }
+
+        .subdomain-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .subdomain-input {
+            flex: 1;
+        }
+
+        .subdomain-suffix {
+            color: #6c757d;
+            font-size: 14px;
+            white-space: nowrap;
+        }
+
+        .checkbox-group {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .checkbox-label {
+            font-size: 14px;
+            color: #495057;
+        }
+
+        .checkbox-label a {
+            color: #007bff;
+            text-decoration: none;
+        }
+
+        .checkbox-label a:hover {
+            text-decoration: underline;
+        }
+
+        .subscription-plan-card {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border: 2px solid #dee2e6;
+            border-radius: 12px;
+            padding: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .plan-info {
+            flex: 1;
+        }
+
+        .plan-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 16px;
+        }
+
+        .plan-name {
+            font-size: 24px;
+            font-weight: 700;
+            color: #2c3e50;
+            margin: 0;
+        }
+
+        .plan-status {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .plan-status.active {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .plan-status.expired {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .plan-status.pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .plan-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+        }
+
+        .plan-feature {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+        }
+
+        .feature-label {
+            font-weight: 500;
+            color: #495057;
+            font-size: 14px;
+        }
+
+        .feature-value {
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 14px;
+        }
+
+        .plan-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-left: 20px;
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: #6c757d;
+            border: 2px solid #6c757d;
+        }
+
+        .btn-outline:hover {
+            background: #6c757d;
+            color: white;
+        }
+
+        .form-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .btn-primary {
+            background: #007bff;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #0056b3;
+        }
+
+        .error-message {
+            color: #dc3545;
+            font-size: 12px;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .form-input.error {
+            border-color: #dc3545;
+        }
+
+        .form-input.error:focus {
+            box-shadow: 0 0 0 3px rgba(220,53,69,0.1);
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                margin-left: 0;
+                padding: 20px;
+            }
+
+            .sidebar {
+                display: none;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .page-header {
+                flex-direction: column;
+                gap: 20px;
+                align-items: stretch;
+            }
+
+            .page-title {
+                text-align: left;
+            }
+
+            .form-container {
+                padding: 20px;
+            }
+
+            .subscription-plan-card {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .plan-actions {
+                margin-left: 0;
+                margin-top: 20px;
+                flex-direction: row;
+                justify-content: center;
+            }
+
+            .plan-details {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .form-footer {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="sidebar-icon">🏠 <span>Home</span></div>
+        <div class="sidebar-icon">📄 <span>Accounts</span></div>
+        <div class="sidebar-icon">🏢 <span>Tenant Management</span></div>
+        <div class="sidebar-icon">🔍 <span>Search & Reports</span></div>
+    </div>
+
+    <div class="main-content">
+        <div class="page-header">
+            <a href="index.html" class="back-link">← Back to Tenant Management</a>
+            <h1 class="page-title">Edit Tenant</h1>
+            <button class="save-button" onclick="saveAndUpdate()">Save & Update</button>
+        </div>
+
+        <div class="form-container">
+            <!-- Subscription Plan Section -->
+            <div class="form-section">
+                <h2 class="section-title">Current Subscription Plan</h2>
+                <div class="subscription-plan-card">
+                    <div class="plan-info">
+                        <div class="plan-header">
+                            <h3 class="plan-name">Professional Plan</h3>
+                            <span class="plan-status active">Active</span>
+                        </div>
+                        <div class="plan-details">
+                            <div class="plan-feature">
+                                <span class="feature-label">Max Franchise Locations:</span>
+                                <span class="feature-value" id="displayMaxLocations">100</span>
+                            </div>
+                            <div class="plan-feature">
+                                <span class="feature-label">Max Staff Members:</span>
+                                <span class="feature-value" id="displayMaxStaff">1200</span>
+                            </div>
+                            <div class="plan-feature">
+                                <span class="feature-label">Monthly Cost:</span>
+                                <span class="feature-value">$299/month</span>
+                            </div>
+                            <div class="plan-feature">
+                                <span class="feature-label">Next Billing Date:</span>
+                                <span class="feature-value">October 15, 2024</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="plan-actions">
+                        <button class="btn btn-primary" onclick="upgradePlan(event)">Upgrade Plan</button>
+                        <button class="btn btn-outline" onclick="viewBilling(event)">View Billing</button>
+                    </div>
+                </div>
+            </div>
+
+            <form id="tenantForm">
+                <!-- Basic Information Section -->
+                <div class="form-section">
+                    <h2 class="section-title">Basic Information</h2>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label" for="tenantType">Tenant Type <span class="required">*</span></label>
+                            <select id="tenantType" name="tenantType" class="form-select" required disabled>
+                                <option value="">Select Tenant Type</option>
+                                <option value="franchisor">Franchisor</option>
+                                <option value="single-store">Single Store</option>
+                            </select>
+                            <div class="error-message" id="tenantTypeError"></div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label" for="brandName">Brand/Business Name <span class="required">*</span></label>
+                            <input type="text" id="brandName" name="brandName" class="form-input" placeholder="Enter brand or business name" required>
+                            <div class="error-message" id="brandNameError"></div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="abn">Business Registration Number (ABN) <span class="required">*</span></label>
+                            <input type="text" id="abn" name="abn" class="form-input" placeholder="Enter ABN" required>
+                            <div class="error-message" id="abnError"></div>
+                        </div>
+                    </div>
+                    <div class="form-row full-width">
+                        <div class="form-group">
+                            <label class="form-label" for="description">Description</label>
+                            <textarea id="description" name="description" class="form-textarea" placeholder="Brief description of the franchisee business..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Contact Information Section -->
+                <div class="form-section">
+                    <h2 class="section-title">Contact Information</h2>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label" for="contactName">Primary Contact Name <span class="required">*</span></label>
+                            <input type="text" id="contactName" name="contactName" class="form-input" placeholder="Enter contact name" required>
+                            <div class="error-message" id="contactNameError"></div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="email">Email Address <span class="required">*</span></label>
+                            <input type="email" id="email" name="email" class="form-input" placeholder="Enter email address" required>
+                            <div class="error-message" id="emailError"></div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label" for="phone">Phone Number</label>
+                            <input type="tel" id="phone" name="phone" class="form-input" placeholder="Enter phone number">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="mobile">Mobile Number</label>
+                            <input type="tel" id="mobile" name="mobile" class="form-input" placeholder="Enter mobile number">
+                        </div>
+                    </div>
+                    <div class="form-row full-width">
+                        <div class="form-group">
+                            <label class="form-label" for="website">Website URL</label>
+                            <input type="url" id="website" name="website" class="form-input" placeholder="https://example.com">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Address Information Section -->
+                <div class="form-section">
+                    <h2 class="section-title">Address Information</h2>
+                    <div class="form-row full-width">
+                        <div class="form-group">
+                            <label class="form-label" for="streetAddress">Street Address <span class="required">*</span></label>
+                            <input type="text" id="streetAddress" name="streetAddress" class="form-input" placeholder="Enter street address" required>
+                            <div class="error-message" id="streetAddressError"></div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label" for="city">City <span class="required">*</span></label>
+                            <input type="text" id="city" name="city" class="form-input" placeholder="Enter city" required>
+                            <div class="error-message" id="cityError"></div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="state">State/Province <span class="required">*</span></label>
+                            <input type="text" id="state" name="state" class="form-input" placeholder="Enter state or province" required>
+                            <div class="error-message" id="stateError"></div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label" for="postalCode">Postal Code <span class="required">*</span></label>
+                            <input type="text" id="postalCode" name="postalCode" class="form-input" placeholder="Enter postal code" required>
+                            <div class="error-message" id="postalCodeError"></div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="country">Country <span class="required">*</span></label>
+                            <select id="country" name="country" class="form-select" required>
+                                <option value="">Select Country</option>
+                                <option value="US">United States</option>
+                                <option value="CA">Canada</option>
+                                <option value="AU">Australia</option>
+                                <option value="UK">United Kingdom</option>
+                                <option value="DE">Germany</option>
+                                <option value="FR">France</option>
+                                <option value="JP">Japan</option>
+                                <option value="other">Other</option>
+                            </select>
+                            <div class="error-message" id="countryError"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- System Configuration Section -->
+                <div class="form-section">
+                    <h2 class="section-title">System Configuration</h2>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label" for="subdomain">Tenant Subdomain <span class="required">*</span></label>
+                            <div class="subdomain-container">
+                                <input type="text" id="subdomain" name="subdomain" class="form-input subdomain-input" placeholder="Enter subdomain" required>
+                                <span class="subdomain-suffix">.franchise.com</span>
+                            </div>
+                            <div class="error-message" id="subdomainError"></div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="timezone">Default Time zone <span class="required">*</span></label>
+                            <select id="timezone" name="timezone" class="form-select" required>
+                                <option value="">Select Time Zone</option>
+                                <option value="UTC-12">UTC-12 (Baker Island)</option>
+                                <option value="UTC-11">UTC-11 (American Samoa)</option>
+                                <option value="UTC-10">UTC-10 (Hawaii)</option>
+                                <option value="UTC-9">UTC-9 (Alaska)</option>
+                                <option value="UTC-8">UTC-8 (Pacific Time)</option>
+                                <option value="UTC-7">UTC-7 (Mountain Time)</option>
+                                <option value="UTC-6">UTC-6 (Central Time)</option>
+                                <option value="UTC-5">UTC-5 (Eastern Time)</option>
+                                <option value="UTC-4">UTC-4 (Atlantic Time)</option>
+                                <option value="UTC-3">UTC-3 (Brazil)</option>
+                                <option value="UTC-2">UTC-2 (Mid-Atlantic)</option>
+                                <option value="UTC-1">UTC-1 (Azores)</option>
+                                <option value="UTC+0">UTC+0 (Greenwich)</option>
+                                <option value="UTC+1">UTC+1 (Central European)</option>
+                                <option value="UTC+2">UTC+2 (Eastern European)</option>
+                                <option value="UTC+3">UTC+3 (Moscow)</option>
+                                <option value="UTC+4">UTC+4 (Gulf)</option>
+                                <option value="UTC+5">UTC+5 (Pakistan)</option>
+                                <option value="UTC+6">UTC+6 (Bangladesh)</option>
+                                <option value="UTC+7">UTC+7 (Indochina)</option>
+                                <option value="UTC+8">UTC+8 (China)</option>
+                                <option value="UTC+9">UTC+9 (Japan)</option>
+                                <option value="UTC+10">UTC+10 (Eastern Australia)</option>
+                                <option value="UTC+11">UTC+11 (Solomon Islands)</option>
+                                <option value="UTC+12">UTC+12 (New Zealand)</option>
+                            </select>
+                            <div class="error-message" id="timezoneError"></div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label" for="language">Default Language</label>
+                            <select id="language" name="language" class="form-select">
+                                <option value="en">English</option>
+                                <option value="es">Spanish</option>
+                                <option value="fr">French</option>
+                                <option value="de">German</option>
+                                <option value="it">Italian</option>
+                                <option value="pt">Portuguese</option>
+                                <option value="ru">Russian</option>
+                                <option value="ja">Japanese</option>
+                                <option value="ko">Korean</option>
+                                <option value="zh">Chinese</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="currency">Default Currency <span class="required">*</span></label>
+                            <select id="currency" name="currency" class="form-select" required>
+                                <option value="">Select Currency</option>
+                                <option value="USD">USD - US Dollar</option>
+                                <option value="EUR">EUR - Euro</option>
+                                <option value="GBP">GBP - British Pound</option>
+                                <option value="CAD">CAD - Canadian Dollar</option>
+                                <option value="AUD">AUD - Australian Dollar</option>
+                                <option value="JPY">JPY - Japanese Yen</option>
+                                <option value="CHF">CHF - Swiss Franc</option>
+                                <option value="CNY">CNY - Chinese Yuan</option>
+                            </select>
+                            <div class="error-message" id="currencyError"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Initial Admin User Section -->
+                <div class="form-section">
+                    <h2 class="section-title">Initial Admin User</h2>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label" for="adminFirstName">Admin First Name <span class="required">*</span></label>
+                            <input type="text" id="adminFirstName" name="adminFirstName" class="form-input" placeholder="Enter first name" required>
+                            <div class="error-message" id="adminFirstNameError"></div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="adminLastName">Admin Last Name <span class="required">*</span></label>
+                            <input type="text" id="adminLastName" name="adminLastName" class="form-input" placeholder="Enter last name" required>
+                            <div class="error-message" id="adminLastNameError"></div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label" for="adminEmail">Admin Email <span class="required">*</span></label>
+                            <input type="email" id="adminEmail" name="adminEmail" class="form-input" placeholder="Enter email" required>
+                            <div class="error-message" id="adminEmailError"></div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="adminPhone">Admin Phone</label>
+                            <input type="tel" id="adminPhone" name="adminPhone" class="form-input" placeholder="Enter phone">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Terms & Conditions Section -->
+                <div class="form-section">
+                    <h2 class="section-title">Terms & Conditions</h2>
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="termsOfService" name="termsOfService" required>
+                            <label for="termsOfService" class="checkbox-label">
+                                I agree to the <a href="#" onclick="openTermsModal()">Terms of Service</a> <span class="required">*</span>
+                            </label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="privacyPolicy" name="privacyPolicy" required>
+                            <label for="privacyPolicy" class="checkbox-label">
+                                I agree to the <a href="#" onclick="openPrivacyModal()">Privacy Policy</a> <span class="required">*</span>
+                            </label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="informationAccurate" name="informationAccurate" required>
+                            <label for="informationAccurate" class="checkbox-label">
+                                I confirm that all information provided is accurate <span class="required">*</span>
+                            </label>
+                        </div>
+                        <div class="checkbox-item">
+                            <label class="checkbox-label">
+                                <a href="#" onclick="openServiceAgreementModal()">Service Agreement Data</a>
+                            </label>
+                        </div>
+                        <div class="checkbox-item">
+                            <label class="checkbox-label">
+                                <a href="#" onclick="openProcessingAgreementModal()">Processing Agreement</a>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-footer">
+                    <button type="button" class="btn btn-secondary" onclick="resetForm()">Reset Form</button>
+                    <button type="submit" class="btn btn-primary">Save & Update</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Form validation
+        function validateForm() {
+            let isValid = true;
+            const requiredFields = [
+                'brandName', 'abn', 'industryCategory', 'businessType',
+                'contactName', 'email', 'streetAddress', 'city', 'state',
+                'postalCode', 'country', 'subdomain', 'timezone', 'currency',
+                'adminFirstName', 'adminLastName', 'adminEmail'
+            ];
+
+            // Clear previous errors
+            document.querySelectorAll('.error-message').forEach(error => {
+                error.style.display = 'none';
+            });
+            document.querySelectorAll('.form-input, .form-select').forEach(input => {
+                input.classList.remove('error');
+            });
+
+            // Validate required fields
+            requiredFields.forEach(fieldName => {
+                const field = document.getElementById(fieldName);
+                const errorElement = document.getElementById(fieldName + 'Error');
+                
+                if (!field.value.trim()) {
+                    field.classList.add('error');
+                    errorElement.textContent = 'This field is required';
+                    errorElement.style.display = 'block';
+                    isValid = false;
+                }
+            });
+
+            // Validate email format
+            const email = document.getElementById('email');
+            const emailError = document.getElementById('emailError');
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (email.value && !emailRegex.test(email.value)) {
+                email.classList.add('error');
+                emailError.textContent = 'Please enter a valid email address';
+                emailError.style.display = 'block';
+                isValid = false;
+            }
+
+            // Validate admin email format
+            const adminEmail = document.getElementById('adminEmail');
+            const adminEmailError = document.getElementById('adminEmailError');
+            if (adminEmail.value && !emailRegex.test(adminEmail.value)) {
+                adminEmail.classList.add('error');
+                adminEmailError.textContent = 'Please enter a valid email address';
+                adminEmailError.style.display = 'block';
+                isValid = false;
+            }
+
+            // Validate subdomain format
+            const subdomain = document.getElementById('subdomain');
+            const subdomainError = document.getElementById('subdomainError');
+            const subdomainRegex = /^[a-z0-9-]+$/;
+            if (subdomain.value && !subdomainRegex.test(subdomain.value)) {
+                subdomain.classList.add('error');
+                subdomainError.textContent = 'Subdomain can only contain lowercase letters, numbers, and hyphens';
+                subdomainError.style.display = 'block';
+                isValid = false;
+            }
+
+            // Validate checkboxes
+            const requiredCheckboxes = ['termsOfService', 'privacyPolicy', 'informationAccurate'];
+            requiredCheckboxes.forEach(checkboxName => {
+                const checkbox = document.getElementById(checkboxName);
+                if (!checkbox.checked) {
+                    isValid = false;
+                    alert('Please accept all required terms and conditions');
+                }
+            });
+
+            return isValid;
+        }
+
+        // Mock tenant data (in real app, this would come from URL params or API)
+        const tenantData = {
+            brandName: 'Acme Burgers',
+            abn: '12345678901',
+            industryCategory: 'food-beverage',
+            businessType: 'franchisor',
+            description: 'Fast food restaurant chain specializing in burgers and fries.',
+            contactName: 'Jane Smith',
+            email: 'jane@acmeburgers.com',
+            phone: '+1 555 123 4567',
+            mobile: '+1 555 123 4568',
+            website: 'https://acmeburgers.com',
+            streetAddress: '123 Main Street',
+            city: 'Springfield',
+            state: 'CA',
+            postalCode: '12345',
+            country: 'US',
+            subdomain: 'acme',
+            timezone: 'UTC-8',
+            language: 'en',
+            currency: 'USD',
+            maxLocations: 100,
+            maxStaff: 1200,
+            adminFirstName: 'Jane',
+            adminLastName: 'Smith',
+            adminEmail: 'jane@acmeburgers.com',
+            adminPhone: '+1 555 123 4567',
+            termsOfService: true,
+            privacyPolicy: true,
+            informationAccurate: true,
+            subscriptionPlan: {
+                name: 'Professional Plan',
+                status: 'active',
+                monthlyCost: '$299/month',
+                nextBillingDate: 'October 15, 2024',
+                maxLocations: 100,
+                maxStaff: 1200
+            }
+        };
+
+        // Helper: get tenant type from URL or select
+        function getTenantType() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const urlType = (urlParams.get('type') || '').toLowerCase();
+            if (urlType === 'franchisor') return 'franchisor';
+            if (urlType === 'single_store' || urlType === 'single-store' || urlType === 'single') return 'single_store';
+            const selectVal = (document.getElementById('businessType')?.value || '').toLowerCase();
+            if (selectVal === 'franchisor') return 'franchisor';
+            if (selectVal === 'single-store' || selectVal === 'single_store' || selectVal === 'single') return 'single_store';
+            // Default to franchisor if unclear
+            return 'franchisor';
+        }
+
+        // Initialize form with existing data
+        function initializeForm() {
+            // Set tenant type from URL parameter
+            const urlParams = new URLSearchParams(window.location.search);
+            const urlType = (urlParams.get('type') || '').toLowerCase();
+            const tenantTypeSelect = document.getElementById('tenantType');
+            if (tenantTypeSelect) {
+                if (urlType === 'franchisor') {
+                    tenantTypeSelect.value = 'franchisor';
+                } else if (urlType === 'single-store' || urlType === 'single_store' || urlType === 'single') {
+                    tenantTypeSelect.value = 'single-store';
+                }
+            }
+
+            // Populate all form fields with existing tenant data
+            Object.keys(tenantData).forEach(key => {
+                const element = document.getElementById(key);
+                if (element && key !== 'tenantType') { // Skip tenantType as it's set from URL
+                    if (element.type === 'checkbox') {
+                        element.checked = tenantData[key];
+                    } else {
+                        element.value = tenantData[key];
+                    }
+                }
+            });
+
+            // Populate subscription plan display
+            populateSubscriptionPlan();
+        }
+
+        // Populate subscription plan display
+        function populateSubscriptionPlan() {
+            const plan = tenantData.subscriptionPlan;
+            
+            // Update plan name
+            document.querySelector('.plan-name').textContent = plan.name;
+            
+            // Update plan status
+            const statusElement = document.querySelector('.plan-status');
+            statusElement.textContent = plan.status;
+            statusElement.className = `plan-status ${plan.status}`;
+            
+            // Update plan details
+            document.getElementById('displayMaxLocations').textContent = plan.maxLocations;
+            document.getElementById('displayMaxStaff').textContent = plan.maxStaff;
+            
+            // Update billing info
+            const planDetails = document.querySelector('.plan-details');
+            const billingInfo = planDetails.querySelectorAll('.feature-value');
+            billingInfo[2].textContent = plan.monthlyCost; // Monthly Cost
+            billingInfo[3].textContent = plan.nextBillingDate; // Next Billing Date
+        }
+
+        // Upgrade plan function
+        // Map current plan name to plan id expected by selection pages
+        function getCurrentPlanId(type) {
+            const name = (tenantData.subscriptionPlan?.name || '').toLowerCase();
+            if (type === 'franchisor') {
+                if (name.includes('starter')) return 'starter';
+                if (name.includes('professional')) return 'professional';
+                if (name.includes('enterprise')) return 'enterprise';
+            } else {
+                if (name.includes('basic')) return 'basic';
+                if (name.includes('standard')) return 'standard';
+                if (name.includes('premium')) return 'premium';
+            }
+            return '';
+        }
+
+        function upgradePlan(e) {
+            if (e) e.preventDefault();
+            // Get tenant type from the select element
+            const tenantTypeSelect = document.getElementById('tenantType');
+            const type = tenantTypeSelect.value;
+            const isFranchisor = type === 'franchisor';
+            const currentId = getCurrentPlanId(type);
+            const currentParam = currentId ? `&current=${encodeURIComponent(currentId)}` : '';
+            // Route to the appropriate subscription plan page
+            const target = isFranchisor
+                ? 'Franchisor_subscription_plan.html?from=edit' + currentParam
+                : 'Single_store_subscription_plan.html?from=edit' + currentParam;
+            window.location.href = target;
+        }
+
+        // View billing function
+        function viewBilling(e) {
+            if (e) e.preventDefault();
+            // Get tenant type and current plan info to pass to billing page
+            const tenantTypeSelect = document.getElementById('tenantType');
+            const type = tenantTypeSelect.value;
+            const plan = tenantData.subscriptionPlan?.name || '';
+            // Pass tenant info as URL parameters
+            window.location.href = `billing_view.html?type=${encodeURIComponent(type)}&plan=${encodeURIComponent(plan)}`;
+        }
+
+        // Save and update function
+        function saveAndUpdate() {
+            if (validateForm()) {
+                // Collect form data
+                const formData = new FormData(document.getElementById('tenantForm'));
+                const data = Object.fromEntries(formData.entries());
+                
+                // Add checkbox values
+                data.termsOfService = document.getElementById('termsOfService').checked;
+                data.privacyPolicy = document.getElementById('privacyPolicy').checked;
+                data.informationAccurate = document.getElementById('informationAccurate').checked;
+
+                console.log('Updated tenant data:', data);
+                
+                // Simulate API call
+                alert('Tenant updated successfully! (This is a demo)');
+                
+                // In a real application, you would send the data to your backend
+                // fetch('/api/tenants/{id}', {
+                //     method: 'PUT',
+                //     headers: { 'Content-Type': 'application/json' },
+                //     body: JSON.stringify(data)
+                // });
+            }
+        }
+
+        // Reset form function
+        function resetForm() {
+            if (confirm('Are you sure you want to reset the form? All changes will be lost.')) {
+                initializeForm(); // Reset to original tenant data
+                document.querySelectorAll('.error-message').forEach(error => {
+                    error.style.display = 'none';
+                });
+                document.querySelectorAll('.form-input, .form-select').forEach(input => {
+                    input.classList.remove('error');
+                });
+            }
+        }
+
+        // Modal functions (placeholder)
+        function openTermsModal() {
+            alert('Terms of Service modal would open here');
+        }
+
+        function openPrivacyModal() {
+            alert('Privacy Policy modal would open here');
+        }
+
+        function openServiceAgreementModal() {
+            alert('Service Agreement Data modal would open here');
+        }
+
+        function openProcessingAgreementModal() {
+            alert('Processing Agreement modal would open here');
+        }
+
+        // Form submission
+        document.getElementById('tenantForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            saveAndUpdate();
+        });
+
+        // Real-time validation
+        document.querySelectorAll('input[required], select[required]').forEach(field => {
+            field.addEventListener('blur', function() {
+                if (!this.value.trim()) {
+                    this.classList.add('error');
+                    const errorElement = document.getElementById(this.id + 'Error');
+                    if (errorElement) {
+                        errorElement.textContent = 'This field is required';
+                        errorElement.style.display = 'block';
+                    }
+                } else {
+                    this.classList.remove('error');
+                    const errorElement = document.getElementById(this.id + 'Error');
+                    if (errorElement) {
+                        errorElement.style.display = 'none';
+                    }
+                }
+            });
+        });
+
+        // Auto-generate subdomain from brand name
+        document.getElementById('brandName').addEventListener('input', function() {
+            const brandName = this.value.toLowerCase()
+                .replace(/[^a-z0-9\s]/g, '')
+                .replace(/\s+/g, '-')
+                .substring(0, 30);
+            document.getElementById('subdomain').value = brandName;
+        });
+
+        // Initialize form on load
+        document.addEventListener('DOMContentLoaded', initializeForm);
+
+        console.log('Tenant edit form loaded');
+    </script>
+</body>
+</html>

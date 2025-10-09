@@ -23,8 +23,8 @@ function performLifecycleAction(tenantId, action) {
                 if (tenant.status !== 'awaiting') {
                     throw new Error('Only awaiting verification tenants can be rejected');
                 }
-                tenant.status = 'rejected';
-                showNotification('Tenant rejected', 'warning');
+                tenant.status = 'closed';
+                showNotification('Tenant marked as Closed', 'warning');
                 break;
                 
             case 'suspend':

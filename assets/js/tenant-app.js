@@ -75,21 +75,11 @@ function initFilterListeners() {
 // Tab Management
 function initTabListeners() {
     const tabAll = document.getElementById('tabAll');
-    const tabVerified = document.getElementById('tabVerified');
-    const tabAwaiting = document.getElementById('tabAwaiting');
-    const tabRejected = document.getElementById('tabRejected');
-    const tabSuspended = document.getElementById('tabSuspended');
-    const tabClosed = document.getElementById('tabClosed');
-    const tabDraft = document.getElementById('tabDraft');
+    const tabActive = document.getElementById('tabActive');
     const tabInactive = document.getElementById('tabInactive');
     
     if (tabAll) tabAll.addEventListener('click', () => showTab('all'));
-    if (tabVerified) tabVerified.addEventListener('click', () => showTab('verified'));
-    if (tabAwaiting) tabAwaiting.addEventListener('click', () => showTab('awaiting'));
-    if (tabRejected) tabRejected.addEventListener('click', () => showTab('rejected'));
-    if (tabSuspended) tabSuspended.addEventListener('click', () => showTab('suspended'));
-    if (tabClosed) tabClosed.addEventListener('click', () => showTab('closed'));
-    if (tabDraft) tabDraft.addEventListener('click', () => showTab('draft'));
+    if (tabActive) tabActive.addEventListener('click', () => showTab('active'));
     if (tabInactive) tabInactive.addEventListener('click', () => showTab('inactive'));
 }
 
@@ -107,26 +97,32 @@ function showTab(tab) {
     const processingCard = document.getElementById('processingCard');
     const bulkActionsPanel = document.getElementById('bulkActionsPanel');
     
-    if (tab === 'draft') {
-        if (resultsCard) resultsCard.style.display = 'none';
-        if (filtersCard) filtersCard.style.display = 'none';
-        if (processingCard) processingCard.style.display = 'block';
-        if (bulkActionsPanel) bulkActionsPanel.style.display = 'none';
-        renderDrafts('draftCards');
-    } else {
+    {
         if (resultsCard) resultsCard.style.display = 'block';
         if (filtersCard) filtersCard.style.display = 'block';
         if (processingCard) processingCard.style.display = 'none';
-        if (bulkActionsPanel) bulkActionsPanel.style.display = 'block';
         
         // Set status filter based on tab
         const statusSelect = document.getElementById('status');
         if (statusSelect) {
-            statusSelect.value = tab === 'all' ? '' : tab;
-            currentFilters.status = statusSelect.value;
+            if (tab === 'all') {
+                statusSelect.value = '';
+                currentFilters.status = '';
+            } else if (tab === 'active') {
+                statusSelect.value = 'active';
+                currentFilters.status = 'active';
+            } else if (tab === 'inactive') {
+                statusSelect.value = 'inactive';
+                currentFilters.status = 'inactive';
+            } else {
+                statusSelect.value = '';
+                currentFilters.status = '';
+            }
         }
         
         filterAndRender();
+        // Ensure bulk actions reflect current selection (likely none after render)
+        updateBulkActionsVisibility();
     }
 }
 
