@@ -42,7 +42,7 @@
 <body>
     <div class="main-content">
         <div class="details-container">
-            <div class="summary-header">
+            <div class="summary-header" id="summaryHeader">
                 <div>
                     <div class="summary-title" id="tenantName">Tenant</div>
                     <div class="summary-sub" id="tenantDomain"></div>
@@ -103,34 +103,136 @@
             <!-- Details Tab -->
             <div class="section hidden" id="tabDetails">
                 <div class="section-title">Edit Details</div>
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label class="form-label">Brand Name</label>
-                        <input class="form-input" id="d_brandName" placeholder="Brand name">
+                <!-- Account Type -->
+                <div class="section" style="padding:16px;">
+                    <div class="section-title">Account Type</div>
+                    <div class="form-grid single">
+                        <div class="form-group">
+                            <label class="form-label">Account Type</label>
+                            <select class="form-select" id="accountType" onchange="updateDetailsType()">
+                                <option value="">-- Select Account Type --</option>
+                                <option value="Franchisor">Franchisor (Brand Owner with Franchisees)</option>
+                                <option value="Single Store">Single Store Owner (Independent Business)</option>
+                            </select>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label class="form-label">Subdomain</label>
-                        <input class="form-input" id="d_subdomain" placeholder="subdomain">
+                </div>
+                <!-- Business Information -->
+                <div class="section" style="padding:16px;">
+                    <div class="section-title">Business Information</div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">Brand Name</label>
+                            <input class="form-input" id="brandName" placeholder="e.g., Coffee Hub">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Subdomain</label>
+                            <input class="form-input" id="subdomain" placeholder="e.g., coffeehub">
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label class="form-label">Contact Name</label>
-                        <input class="form-input" id="d_contactName" placeholder="Contact name">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">Industry Category</label>
+                            <select class="form-select" id="industry">
+                                <option value="">-- Select Industry --</option>
+                                <option value="Food & Beverage">Food & Beverage</option>
+                                <option value="Retail">Retail</option>
+                                <option value="Fitness & Wellness">Fitness & Wellness</option>
+                                <option value="Education">Education</option>
+                                <option value="Automotive">Automotive</option>
+                                <option value="Beauty & Salon">Beauty & Salon</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Country</label>
+                            <select class="form-select" id="country">
+                                <option value="">-- Select Country --</option>
+                                <option value="USA">United States</option>
+                                <option value="Canada">Canada</option>
+                                <option value="UK">United Kingdom</option>
+                                <option value="Australia">Australia</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label class="form-label">Email</label>
-                        <input class="form-input" id="d_email" placeholder="email@domain.com">
+                    <div class="form-grid single">
+                        <div class="form-group">
+                            <label class="form-label">Business Description</label>
+                            <textarea class="form-textarea" id="description" placeholder="Brief description of the business..."></textarea>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label class="form-label">Phone</label>
-                        <input class="form-input" id="d_phone" placeholder="+1 (555) 123-4567">
+                </div>
+                <!-- Primary Contact -->
+                <div class="section" style="padding:16px;">
+                    <div class="section-title">Primary Contact Information</div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">Contact Name</label>
+                            <input class="form-input" id="contactName" placeholder="John Doe">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Contact Title</label>
+                            <input class="form-input" id="contactTitle" placeholder="CEO / Owner">
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label class="form-label">Plan</label>
-                        <select class="form-select" id="d_plan">
-                            <option value="basic">Basic</option>
-                            <option value="professional">Professional</option>
-                            <option value="enterprise">Enterprise</option>
-                        </select>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">Email Address</label>
+                            <input class="form-input" id="contactEmail" placeholder="john@coffeehub.com">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Phone Number</label>
+                            <input class="form-input" id="contactPhone" placeholder="+1 (555) 000-0000">
+                        </div>
+                    </div>
+                </div>
+                <!-- Subscription Plan -->
+                <div class="section" style="padding:16px;">
+                    <div class="section-title">Subscription Plan</div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">Plan Type</label>
+                            <select class="form-select" id="planType">
+                                <option value="">-- Select Plan --</option>
+                                <option value="basic">Basic</option>
+                                <option value="professional">Professional</option>
+                                <option value="enterprise">Enterprise</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Billing Cycle</label>
+                            <select class="form-select" id="billingCycle">
+                                <option value="Monthly">Monthly</option>
+                                <option value="Annual">Annual (20% discount)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-grid" id="maxAccountsRow" style="display:none;">
+                        <div class="form-group">
+                            <label class="form-label">Max Franchisee Accounts</label>
+                            <input class="form-input" id="maxFranchisees" type="number" min="1" placeholder="e.g., 50">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Max Staff Accounts</label>
+                            <input class="form-input" id="maxStaff" type="number" min="1" placeholder="e.g., 100">
+                        </div>
+                    </div>
+                    <div class="form-grid" id="singleStoreRow" style="display:none;">
+                        <div class="form-group">
+                            <label class="form-label">Max Staff Accounts</label>
+                            <input class="form-input" id="maxStaffSingle" type="number" min="1" placeholder="e.g., 20">
+                        </div>
+                    </div>
+                </div>
+                <!-- Additional Information -->
+                <div class="section" style="padding:16px;">
+                    <div class="section-title">Additional Information</div>
+                    <div class="form-grid single">
+                        <div class="form-group">
+                            <label class="form-label">Internal Notes</label>
+                            <textarea class="form-textarea" id="notes" placeholder="Any internal notes about this account..."></textarea>
+                        </div>
                     </div>
                 </div>
                 <div style="margin-top:12px; display:flex; gap:8px; justify-content:flex-end;">
@@ -264,13 +366,21 @@
             document.getElementById('btnAudit').onclick = () => { if(typeof showAuditLogModal==='function') showAuditLogModal(t.id); };
 
             // Populate Details tab
-            document.getElementById('d_brandName').value = t.name || '';
-            document.getElementById('d_subdomain').value = t.subdomain || '';
-            document.getElementById('d_contactName').value = derived.name || '';
-            document.getElementById('d_email').value = derived.email || '';
-            document.getElementById('d_phone').value = derived.phone || '';
-            const planSel = document.getElementById('d_plan');
-            if (planSel) planSel.value = (t.plan||'').toLowerCase();
+            const acctType = document.getElementById('accountType');
+            if (acctType) acctType.value = isFranchisor ? 'Franchisor' : 'Single Store';
+            document.getElementById('brandName').value = t.name || '';
+            document.getElementById('subdomain').value = t.subdomain || '';
+            document.getElementById('industry').value = t.industry || '';
+            document.getElementById('country').value = 'USA';
+            document.getElementById('description').value = t.description || '';
+            document.getElementById('contactName').value = derived.name || '';
+            document.getElementById('contactTitle').value = t.contactTitle || '';
+            document.getElementById('contactEmail').value = derived.email || '';
+            document.getElementById('contactPhone').value = derived.phone || '';
+            document.getElementById('planType').value = (t.plan||'').toLowerCase();
+            document.getElementById('billingCycle').value = 'Monthly';
+            document.getElementById('maxFranchisees').value = (t.franchisees||[]).length || '';
+            document.getElementById('maxStaff').value = t.staffTotal || '';
 
             // Populate Config tab (mock defaults)
             document.getElementById('c_timezone').value = 'UTC-8';
@@ -289,6 +399,20 @@
                 if(!b) return;
                 b.classList.toggle('active', id.toLowerCase().includes(which.replace('tab','').toLowerCase()));
             });
+            const header=document.getElementById('summaryHeader');
+            if(header){ header.style.display = (which==='tabDetails') ? 'none' : 'flex'; }
+            // Hide overview-only blocks when Details tab is active
+            const hideIds = ['tabOverview','overviewBlocks','franchiseesSection','metrics'];
+            hideIds.forEach(id=>{
+                const el = document.getElementById(id);
+                if(!el) return;
+                if (which==='tabDetails') {
+                    el.style.display = 'none';
+                } else {
+                    // reset to default when not on Details
+                    el.style.display = '';
+                }
+            });
         }
 
         function bindTabs(){
@@ -299,6 +423,13 @@
             if(d) d.addEventListener('click', ()=>switchTab('tabDetails'));
             if(c) c.addEventListener('click', ()=>switchTab('tabConfig'));
             switchTab('tabOverview');
+        }
+
+        function updateDetailsType(){
+            const type = document.getElementById('accountType').value;
+            const franchisor = type === 'Franchisor';
+            document.getElementById('maxAccountsRow').style.display = franchisor ? 'grid' : 'none';
+            document.getElementById('singleStoreRow').style.display = franchisor ? 'none' : 'grid';
         }
 
         if(document.readyState==='loading'){
